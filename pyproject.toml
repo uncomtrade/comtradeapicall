@@ -1,0 +1,18 @@
+[project]
+name = "comtradeapicall"
+version = "1.0.1"
+authors = [
+  { name="untradestats", email="untradestats@gmail.com" },
+]
+description = "A package to call UN Comtrade APIs"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/uncomtrade/comtradeapicall"
+"Bug Tracker" = "https://github.com/uncomtrade/comtradeapicall/issues"
