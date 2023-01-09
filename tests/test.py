@@ -49,6 +49,6 @@ comtradeapicall.bulkDownloadFinalFile(subscription_key, directory, typeCode='C',
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='M', clCode='HS',
                                            period='200001,200002,200003', reporterCode=504, decompress=True)
 # Call bulk download tariff data file(s) to output dir, (premium) subscription key required
-# This example: Download monthly Morocco  data of 2010
+# This example: Download annual Morocco  data of 2010
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
                                            period='2010', reporterCode=504, decompress=True)
