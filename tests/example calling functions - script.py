@@ -45,7 +45,7 @@ print(mydf.head(5))
 comtradeapicall.bulkDownloadFinalFile(subscription_key, directory, typeCode='C', freqCode='M', clCode='HS',
                                       period='200001', reporterCode=251, decompress=True)
 # Call bulk download tariff data file(s) to output dir, (premium) subscription key required
-# This example: Download monthly France tariffline data of Jan-2000
+# This example: Download monthly France tariffline data of Jan-Mar 2000
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='M', clCode='HS',
                                            period='200001,200002,200003', reporterCode=504, decompress=True)
 # Call bulk download tariff data file(s) to output dir, (premium) subscription key required
