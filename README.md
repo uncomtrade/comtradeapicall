@@ -9,8 +9,7 @@ This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.
   calling a single python function with the appropriate parameters. 
 
 This project is intended to be deployed at [The Python Package Index](https://pypi.org/), therfore the structure of
- folders follows the suggested layout from [Packaging Python Project](https://packaging.python.org/en/latest
- /tutorials/packaging-projects/). The main script is located at **/src/comtradeapicall/__init__.py**. And the folder **tests** contains
+ folders follows the suggested layout from [Packaging Python Project](https://packaging.python.org/en/latest/tutorials/packaging-projects/). The main script is located at **/src/comtradeapicall/__init__.py**. And the folder **tests** contains
  example
  script how to install and use the package.
  
