@@ -115,17 +115,17 @@ comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode
                                            period='2010', reporterCode=504, decompress=True)
 ```  
 - Tests folder contain more examples including calculation of unit value
-###Downloaded file name convention
+
+## Downloaded file name convention
 The naming convention follows the following : "COMTRADE-\<DATA>-\<TYPE>\<FREQ>\<COUNTRY CODE>\<YEAR\[
 -MONTH\]>\<CLASSIFICATION CODE>\[\<RELEASE DATE\>\]"
 
 As examples:
 - Final merchandise trade data from Morocco (code 504) in March 2000 released on 3 Jan 2023 coded using H1
- classification
- : *COMTRADE
--FINAL-CM504200003H1[2023-01-03]*
-- Tariffline merchandise trade from Morocco (code 504) in March 2000 released on 3 Jan 2023 coded using H1 classification: *COMTRADE
--TARIFFLINE-CM504200003H1[2023-01-03]*
+ classification:
+  - *COMTRADE-FINAL-CM504200003H1[2023-01-03]*
+- Tariffline merchandise trade from Morocco (code 504) in March 2000 released on 3 Jan 2023 coded using H1 classification: 
+  - *COMTRADE-TARIFFLINE-CM504200003H1[2023-01-03]*
 
 
 
