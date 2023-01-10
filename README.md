@@ -46,7 +46,25 @@ pip install comtradeapicall
 See differences between final and tariff line data at the [Wiki](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+FAQ+for+First+Time+Users#NewComtradeFAQforFirstTimeUsers-Whatisthetarifflinedata?)
  
 ## Selection Criteria
--TBD
+- typeCode(str) : Product type. Goods (C) or Services (S)
+- freqCode(str) : The time interval at which observations occur. Annual (A) or Monthly (M)
+- clCode(str) : Indicates the product classification used and which version (HS, SITC)
+- period(str) :  Combination of year and month (for monthly), year for (annual)
+- reporterCode(str) : The country or geographic area to which the measured statistical phenomenon relates
+- cmdCode(str) : Product code in conjunction with classification code
+- flowCode(str) : Trade flow or sub-flow (exports, re-exports, imports, re-imports, etc.)
+- partnerCode(str) : The primary partner country or geographic area for the respective trade flow
+- partner2Code(str) : A secondary partner country or geographic area for the respective trade flow
+- customsCode(str) : Customs or statistical procedure
+- motCode(str) : The mode of transport used when goods enter or leave the economic territory of a country
+
+## Query Options
+- maxRecords(int) : Limit number of returned records
+- format_output(str) : The output format. CSV or JSON 
+- aggregateBy(str) : Option for aggregating the query 
+- breakdownMode(str) : Option to select the classic (trade by partner/product) or plus (extended breakdown) mode
+- countOnly(bool) : Return the actual number of records if set to True 
+- includeDesc(bool) : Option to include the description or not
  
 ## Examples of python usage
 - Extract Australia imports of commodity code 91 in classic mode in May 2022
