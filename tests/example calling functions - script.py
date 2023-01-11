@@ -56,7 +56,7 @@ comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode
 mydf = comtradeapicall.getFinalDataAvailability(subscription_key, typeCode='C', freqCode='A', clCode='HS',
                                                 period='2021', reporterCode=None)
 print(mydf.head(5))
-# Call data availability for monthly HS in Jun-2022
+# Call tariffline data availability for monthly HS in Jun-2022
 mydf = comtradeapicall.getTarifflineDataAvailability(subscription_key, typeCode='C', freqCode='M', clCode='HS',
                                                      period='202206', reporterCode=None)
 print(mydf.head(5))
