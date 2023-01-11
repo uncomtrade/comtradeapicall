@@ -1,17 +1,16 @@
 # UN Comtrade API Package
 This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.un.org) to extract and download data
- (and much more)
-. New users can learn more about UN Comtrade at the [wiki](https://unstats.un.org/wiki/display/comtrade/UN+Comtrade).
+ (and much more). 
 
 ## Details
 [UN Commtrade](https://comtrade.un.org) provides free and premium APIs to extract and download data/metadata, however
  it is quite a learning curve to understand all of APIs end-points and parameters. This package simplifies it by
-  calling a single python function with the appropriate parameters. 
+  calling a single python function with the appropriate parameters. Learn more about UN Comtrade at the [UN Comtrade wiki](https://unstats.un.org/wiki/display/comtrade/UN+Comtrade).
 
-This project is intended to be deployed at [The Python Package Index](https://pypi.org/), therfore the structure of
- folders follows the suggested layout from [Packaging Python Project](https://packaging.python.org/en/latest/tutorials/packaging-projects/). The main script is located at **/src/comtradeapicall/__init__.py**. And the folder **tests** contains
+This project is intended to be deployed at [The Python Package Index](https://pypi.org/), therefore the structure of
+ folders follows the suggested layout from [Packaging Python Project](https://packaging.python.org/en/latest/tutorials/packaging-projects/). The main scripts are located at **/src/comtradeapicall/**. And the folder **tests** contains
  example
- script how to install and use the package.
+ scripts how to install and use the package.
  
  ## Prerequisites
 This package assumes using Python 3.7 and the expected package dependencies are listed in the "requirements.txt" file
