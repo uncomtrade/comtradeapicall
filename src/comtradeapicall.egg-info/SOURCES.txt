@@ -1,8 +1,0 @@
-LICENSE
-README.md
-pyproject.toml
-src/comtradeapicall/__init__.py
-src/comtradeapicall.egg-info/PKG-INFO
-src/comtradeapicall.egg-info/SOURCES.txt
-src/comtradeapicall.egg-info/dependency_links.txt
-src/comtradeapicall.egg-info/top_level.txt
