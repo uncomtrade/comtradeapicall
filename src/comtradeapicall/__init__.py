@@ -9,6 +9,6 @@ from .PreviewGet import getTarifflineData
 from .BulkDownload import bulkDownloadFinalFile
 from .BulkDownload import bulkDownloadTarifflineFile
 
-# BulkDownload module
+# DataAvailability module
 from .DataAvailability import getFinalDataAvailability
 from .DataAvailability import getTarifflineDataAvailability

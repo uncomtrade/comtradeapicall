@@ -52,3 +52,11 @@ comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode
 # This example: Download annual Morocco  data of 2010
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
                                            period='2010', reporterCode=504, decompress=True)
+# Call data availability for annual HS in 2021
+mydf = comtradeapicall.getFinalDataAvailability(subscription_key, typeCode='C', freqCode='A', clCode='HS',
+                                                period='2021', reporterCode=None)
+print(mydf.head(5))
+# Call data availability for monthly HS in Jun-2022
+mydf = comtradeapicall.getTarifflineDataAvailability(subscription_key, typeCode='C', freqCode='M', clCode='HS',
+                                                     period='202206', reporterCode=None)
+print(mydf.head(5))
