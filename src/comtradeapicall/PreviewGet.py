@@ -1,4 +1,6 @@
 import json
+import time as t
+from datetime import datetime
 import pandas
 from pandas import json_normalize
 import requests
@@ -80,7 +82,16 @@ def _previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode,
                                 countOnly, includeDesc):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
-        staging_df = previewFinalData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
+        try:
+            staging_df = previewFinalData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
+                                          partnerCode,
+                                          partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
+                                          breakdownMode,
+                                          countOnly, includeDesc)
+        except: #retry once more after 10 secs
+            print('Repeating API call for period: ' + single_period)
+            t.sleep(10)
+            staging_df = previewFinalData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
                      partnerCode,
                      partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
                      breakdownMode,
@@ -106,7 +117,16 @@ def _previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmd
                               countOnly, includeDesc):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
-        staging_df = previewTarifflineData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
+        try:
+            staging_df = previewTarifflineData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode,
+                                               flowCode,
+                                               partnerCode,
+                                               partner2Code, customsCode, motCode, maxRecords, format_output,
+                                               countOnly, includeDesc)
+        except: #retry once more after 10 secs
+            print('Repeating API call for period: ' + single_period)
+            t.sleep(10)
+            staging_df = previewTarifflineData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
                               partnerCode,
                               partner2Code, customsCode, motCode, maxRecords, format_output,
                               countOnly, includeDesc)
@@ -132,7 +152,17 @@ def _getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporter
                               countOnly, includeDesc):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
-        staging_df = getFinalData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode, cmdCode,
+        try:
+            staging_df = getFinalData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode,
+                                      cmdCode,
+                                      flowCode, partnerCode,
+                                      partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
+                                      breakdownMode,
+                                      countOnly, includeDesc)
+        except: #retry once more after 10 secs
+            print('Repeating API call for period: ' + single_period)
+            t.sleep(10)
+            staging_df = getFinalData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode, cmdCode,
                                   flowCode, partnerCode,
                                   partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
                                   breakdownMode,
@@ -157,10 +187,17 @@ def _getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, rep
                               countOnly, includeDesc):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
-        staging_df = getTarifflineData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode,
+        try:
+            staging_df = getTarifflineData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode,
+                              cmdCode, flowCode, partnerCode,
+                              partner2Code, customsCode, motCode, maxRecords, format_output,
+                              countOnly, includeDesc)
+        except: #retry once more after 10 secs
+            print('Repeating API call for period: ' + single_period)
+            t.sleep(10)
+            staging_df = getTarifflineData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode,
                               cmdCode, flowCode, partnerCode,
                               partner2Code, customsCode, motCode, maxRecords, format_output,
                               countOnly, includeDesc)
         main_df = pandas.concat([main_df, staging_df])
     return main_df
-
