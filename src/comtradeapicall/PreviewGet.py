@@ -73,6 +73,22 @@ def previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, 
                                   breakdownMode,
                                   countOnly, includeDesc)
 
+def _previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+                              partnerCode,
+                              partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
+                              breakdownMode,
+                                countOnly, includeDesc):
+    main_df = pandas.DataFrame()
+    for single_period in list(period.split(",")):
+        staging_df = previewFinalData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
+                     partnerCode,
+                     partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
+                     breakdownMode,
+                     countOnly, includeDesc)
+        main_df = pandas.concat([main_df, staging_df])
+    return main_df
+
+
 def previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
                               partner2Code, customsCode, motCode, maxRecords, format_output,
@@ -83,6 +99,19 @@ def previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdC
                                   partner2Code, customsCode, motCode, maxRecords, format_output, None,
                                   None,
                                   countOnly, includeDesc)
+
+def _previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+                              partnerCode,
+                              partner2Code, customsCode, motCode, maxRecords, format_output,
+                              countOnly, includeDesc):
+    main_df = pandas.DataFrame()
+    for single_period in list(period.split(",")):
+        staging_df = previewTarifflineData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
+                              partnerCode,
+                              partner2Code, customsCode, motCode, maxRecords, format_output,
+                              countOnly, includeDesc)
+        main_df = pandas.concat([main_df, staging_df])
+    return main_df
 
 def getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
@@ -96,6 +125,21 @@ def getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterC
                                   breakdownMode,
                                   countOnly, includeDesc)
 
+def _getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+                              partnerCode,
+                              partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
+                              breakdownMode,
+                              countOnly, includeDesc):
+    main_df = pandas.DataFrame()
+    for single_period in list(period.split(",")):
+        staging_df = getFinalData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode, cmdCode,
+                                  flowCode, partnerCode,
+                                  partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
+                                  breakdownMode,
+                                  countOnly, includeDesc)
+        main_df = pandas.concat([main_df, staging_df])
+    return main_df
+
 def getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
                               partner2Code, customsCode, motCode, maxRecords, format_output,
@@ -106,4 +150,17 @@ def getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, repo
                                   partner2Code, customsCode, motCode, maxRecords, format_output, None,
                                   None,
                                   countOnly, includeDesc)
+
+def _getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+                              partnerCode,
+                              partner2Code, customsCode, motCode, maxRecords, format_output,
+                              countOnly, includeDesc):
+    main_df = pandas.DataFrame()
+    for single_period in list(period.split(",")):
+        staging_df = getTarifflineData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode,
+                              cmdCode, flowCode, partnerCode,
+                              partner2Code, customsCode, motCode, maxRecords, format_output,
+                              countOnly, includeDesc)
+        main_df = pandas.concat([main_df, staging_df])
+    return main_df
 

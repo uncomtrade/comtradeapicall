@@ -32,6 +32,17 @@ pip install comtradeapicall
    trade data (limited to 250K records)
   - getTarifflineData(**subscription_key**, **SelectionCriteria**, **query_option**)  : return data frame containing
    tariff line data (limited to 250K records)
+  - Alternative functions of _previewFinalData, _previewTarifflineData, _getFinalData, _getTarifflineData returns the
+   same data frame, respectively,  with query optimization by calling multiple APIs based on the periods (instead of
+    single API call)
+   
+- **DataAvailability:** Model class to extract data availability
+  - getFinalDataAvailability(**subscription_key**, **SelectionCriteria**) : return data frame containing final data
+   availability
+  - getTarifflineDataAvailability(**subscription_key**, **SelectionCriteria**) : return data frame containing tariff
+   line
+   data
+   availability
   
 - **BulkDownload:** Model class to download the data files
   - bulkDownloadFinalData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**) : download/save

@@ -14,11 +14,25 @@ mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS',
                                         customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
                                         aggregateBy=None, breakdownMode='classic', countOnly=None, includeDesc=True)
 print(mydf.head(5))
+# This function will split the query into multiple API calls for optimization (and avoiding timeout)
+mydf = comtradeapicall._previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202105,202205',
+                                        reporterCode='36', cmdCode='91', flowCode='M', partnerCode=None,
+                                        partner2Code=None,
+                                        customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
+                                        aggregateBy=None, breakdownMode='classic', countOnly=None, includeDesc=True)
+print(mydf.head(5))
 
 # Call preview tariffline data API to a data frame, max to 500 records, no subscription key required
 # This example: Australia imports of commodity code started with 90 and 91 from Indonesia in May 2022
 mydf = comtradeapicall.previewTarifflineData(typeCode='C', freqCode='M', clCode='HS', period='202205',
-                                             reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=36,
+                                             reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=360,
+                                             partner2Code=None,
+                                             customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
+                                             countOnly=None, includeDesc=True)
+print(mydf.head(5))
+# This function will split the query into multiple API calls for optimization (and avoiding timeout)
+mydf = comtradeapicall._previewTarifflineData(typeCode='C', freqCode='M', clCode='HS', period='202105,202205',
+                                             reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=360,
                                              partner2Code=None,
                                              customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
                                              countOnly=None, includeDesc=True)
@@ -32,10 +46,25 @@ mydf = comtradeapicall.getFinalData(subscription_key, typeCode='C', freqCode='M'
                                     customsCode=None, motCode=None, maxRecords=2500, format_output='JSON',
                                     aggregateBy=None, breakdownMode='classic', countOnly=None, includeDesc=True)
 print(mydf.head(5))
+# This function will split the query into multiple API calls for optimization (and avoiding timeout)
+mydf = comtradeapicall._getFinalData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202105,202205',
+                                    reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=None,
+                                    partner2Code=None,
+                                    customsCode=None, motCode=None, maxRecords=2500, format_output='JSON',
+                                    aggregateBy=None, breakdownMode='classic', countOnly=None, includeDesc=True)
+print(mydf.head(5))
 # Call get tariffline data API to a data frame, max to 250K records, subscription key required
 # This example: Australia imports of commodity code started with 90 and 91 from Indonesia in May 2022
 mydf = comtradeapicall.getTarifflineData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
-                                         reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=36,
+                                         reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=360,
+                                         partner2Code=None,
+                                         customsCode=None, motCode=None, maxRecords=2500, format_output='JSON',
+                                         countOnly=None, includeDesc=True)
+print(mydf.head(5))
+# This function will split the query into multiple API calls for optimization (and avoiding timeout)
+mydf = comtradeapicall._getTarifflineData(subscription_key, typeCode='C', freqCode='M', clCode='HS',
+                                          period='202105,202205',
+                                         reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=360,
                                          partner2Code=None,
                                          customsCode=None, motCode=None, maxRecords=2500, format_output='JSON',
                                          countOnly=None, includeDesc=True)
@@ -52,11 +81,11 @@ comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode
 # This example: Download annual Morocco  data of 2010
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
                                            period='2010', reporterCode=504, decompress=True)
-# Call data availability for annual HS in 2021
+# Call final data availability for annual HS in 2021
 mydf = comtradeapicall.getFinalDataAvailability(subscription_key, typeCode='C', freqCode='A', clCode='HS',
                                                 period='2021', reporterCode=None)
 print(mydf.head(5))
-# Call data availability for monthly HS in Jun-2022
+# Call tariffline data availability for monthly HS in Jun-2022
 mydf = comtradeapicall.getTarifflineDataAvailability(subscription_key, typeCode='C', freqCode='M', clCode='HS',
                                                      period='202206', reporterCode=None)
 print(mydf.head(5))
