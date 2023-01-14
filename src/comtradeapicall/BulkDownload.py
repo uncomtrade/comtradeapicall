@@ -4,7 +4,7 @@ import shutil
 import gzip
 from pandas import json_normalize
 
-def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqCode, clCode, period, reporterCode, decompress):
+def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo):
 
     if tradeDataType == 'TARIFFLINE':
         baseURLDataAvailability = 'https://comtradeapi.un.org/bulk/v1/getTariffline/' + typeCode + '/' + freqCode + '/' + clCode
@@ -13,7 +13,7 @@ def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqC
         baseURLDataAvailability = 'https://comtradeapi.un.org/bulk/v1/get/' + typeCode + '/' + freqCode + '/' + clCode
         prefixFile = 'FINAL'
 
-    PARAMS = dict(reportercode=reporterCode, period=period)
+    PARAMS = dict(reportercode=reporterCode, period=period, publishedDateFrom=publishedDateFrom, publishedDateTo=publishedDateTo)
     # add key
     PARAMS["subscription-key"] = subscription_key
     try:
@@ -79,9 +79,17 @@ def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqC
 
 def bulkDownloadFinalFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress):
     bulkDownloadFile(subscription_key, directory, 'FINAL', typeCode, freqCode, clCode, period,
-                             reporterCode, decompress)
+                             reporterCode, decompress, None, None)
 
 def bulkDownloadTarifflineFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress):
     bulkDownloadFile(subscription_key, directory, 'TARIFFLINE', typeCode, freqCode, clCode, period,
-                             reporterCode, decompress)
+                             reporterCode, decompress, None, None)
+
+def bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo):
+    bulkDownloadFile(subscription_key, directory, 'FINAL', typeCode, freqCode, clCode, period,
+                             reporterCode, decompress, publishedDateFrom, publishedDateTo)
+
+def bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo):
+    bulkDownloadFile(subscription_key, directory, 'TARIFFLINE', typeCode, freqCode, clCode, period,
+                             reporterCode, decompress, publishedDateFrom, publishedDateTo)
 

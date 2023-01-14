@@ -81,6 +81,18 @@ comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode
 # This example: Download annual Morocco  data of 2010
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
                                            period='2010', reporterCode=504, decompress=True)
+# Call bulk download tariff data file(s) to output dir, (premium) subscription key required
+# This example: Download HS annual data released since  yesterday
+from datetime import date
+from datetime import timedelta
+yesterday = date.today() - timedelta(days=1)
+comtradeapicall.bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode='C', freqCode='A',
+                                               clCode='HS',
+                                               period=None, reporterCode=None, decompress=False,
+                                               publishedDateFrom=yesterday, publishedDateTo=None)
+comtradeapicall.bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode='C', freqCode='A',
+                                                    clCode='HS', period=None, reporterCode=None, decompress=False,
+                                                    publishedDateFrom=yesterday, publishedDateTo=None)
 # Call final data availability for annual HS in 2021
 mydf = comtradeapicall.getFinalDataAvailability(subscription_key, typeCode='C', freqCode='A', clCode='HS',
                                                 period='2021', reporterCode=None)

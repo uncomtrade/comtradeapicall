@@ -12,6 +12,8 @@ from .PreviewGet import _getTarifflineData
 # BulkDownload module
 from .BulkDownload import bulkDownloadFinalFile
 from .BulkDownload import bulkDownloadTarifflineFile
+from .BulkDownload import bulkDownloadFinalFileDateRange
+from .BulkDownload import bulkDownloadTarifflineFileDateRange
 
 # DataAvailability module
 from .DataAvailability import getFinalDataAvailability

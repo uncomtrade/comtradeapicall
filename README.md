@@ -116,10 +116,16 @@ comtradeapicall.bulkDownloadFinalFile(subscription_key, directory, typeCode='C',
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='M', clCode='HS',
                                            period='200001,200002,200003', reporterCode=504, decompress=True)
 ```  
-- Download annual Morocco  data of 2010
+- Download annual Morocco tariff line  data of 2010
 ``` python
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
                                            period='2010', reporterCode=504, decompress=True)
+```  
+- Download all final annual data  in HS classification released yesterday
+``` python
+comtradeapicall.bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
+                                              period=None, reporterCode=None, decompress=True,
+                                              publishedDateFrom='2023-01-14', publishedDateTo=None)
 ```  
 - Tests folder contain more examples including calculation of unit value
 
