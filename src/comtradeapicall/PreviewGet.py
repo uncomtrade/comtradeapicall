@@ -5,7 +5,8 @@ import pandas
 from pandas import json_normalize
 import requests
 
-def getPreviewData(subscription_key, tradeDataType, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+def getPreviewData(subscription_key, tradeDataType, typeCode, freqCode, clCode, period, reporterCode, cmdCode,
+                   flowCode,
                               partnerCode,
                               partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
                               breakdownMode,
@@ -30,6 +31,8 @@ def getPreviewData(subscription_key, tradeDataType, typeCode, freqCode, clCode, 
     PARAMS["subscription-key"] = subscription_key
     # print(PARAMS)
     # only for JSON format
+    if format_output is None:
+        format_output = 'JSON'
     if format_output != 'JSON':
         print("Only JSON output is supported with this function")
     else:
@@ -41,8 +44,11 @@ def getPreviewData(subscription_key, tradeDataType, typeCode, freqCode, clCode, 
                 # This means something went wrong.
                 jsonResult = resp.json()
                 print('Error in calling API:', resp.url)
-                print('Error code:', jsonResult['statusCode'])
-                print('Error message:', jsonResult['message'])
+                try:
+                    print('Error code:', jsonResult['statusCode'])
+                    print('Error message:', jsonResult['message'])
+                except:
+                    t.sleep(1)
             else:
                 jsonResult = resp.json()
                 if countOnly:
@@ -65,9 +71,8 @@ def getPreviewData(subscription_key, tradeDataType, typeCode, freqCode, clCode, 
 
 def previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
-                              partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
-                              breakdownMode,
-                              countOnly, includeDesc):
+                              partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
+                            aggregateBy=None, breakdownMode=None, countOnly=None, includeDesc=None):
     return getPreviewData(None, 'FINAL', typeCode, freqCode, clCode, period, reporterCode,
                                   cmdCode, flowCode,
                                   partnerCode,
@@ -77,9 +82,8 @@ def previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, 
 
 def _previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
-                              partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
-                              breakdownMode,
-                                countOnly, includeDesc):
+                              partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
+                            aggregateBy=None, breakdownMode=None, countOnly=None, includeDesc=None):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
         try:
@@ -102,8 +106,8 @@ def _previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode,
 
 def previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
-                              partner2Code, customsCode, motCode, maxRecords, format_output,
-                              countOnly, includeDesc):
+                              partner2Code, customsCode, motCode, maxRecords= None, format_output=None,
+                              countOnly=None, includeDesc=None):
     return getPreviewData(None, 'TARIFFLINE', typeCode, freqCode, clCode, period, reporterCode,
                                   cmdCode, flowCode,
                                   partnerCode,
@@ -113,8 +117,8 @@ def previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdC
 
 def _previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
-                              partner2Code, customsCode, motCode, maxRecords, format_output,
-                              countOnly, includeDesc):
+                              partner2Code, customsCode, motCode, maxRecords= None, format_output=None,
+                              countOnly=None, includeDesc=None):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
         try:
@@ -135,9 +139,8 @@ def _previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmd
 
 def getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
-                              partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
-                              breakdownMode,
-                              countOnly, includeDesc):
+                              partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
+                            aggregateBy=None, breakdownMode=None, countOnly=None, includeDesc=None):
     return getPreviewData(subscription_key, 'FINAL', typeCode, freqCode, clCode, period, reporterCode,
                                   cmdCode, flowCode,
                                   partnerCode,
@@ -147,9 +150,8 @@ def getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterC
 
 def _getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
-                              partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
-                              breakdownMode,
-                              countOnly, includeDesc):
+                              partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
+                            aggregateBy=None, breakdownMode=None, countOnly=None, includeDesc=None):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
         try:
@@ -172,8 +174,8 @@ def _getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporter
 
 def getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
-                              partner2Code, customsCode, motCode, maxRecords, format_output,
-                              countOnly, includeDesc):
+                              partner2Code, customsCode, motCode, maxRecords= None, format_output=None,
+                              countOnly=None, includeDesc=None):
     return getPreviewData(subscription_key, 'TARIFFLINE', typeCode, freqCode, clCode, period, reporterCode,
                                   cmdCode, flowCode,
                                   partnerCode,
@@ -183,8 +185,8 @@ def getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, repo
 
 def _getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
-                              partner2Code, customsCode, motCode, maxRecords, format_output,
-                              countOnly, includeDesc):
+                              partner2Code, customsCode, motCode, maxRecords= None, format_output=None,
+                              countOnly=None, includeDesc=None):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
         try:
@@ -201,3 +203,4 @@ def _getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, rep
                               countOnly, includeDesc)
         main_df = pandas.concat([main_df, staging_df])
     return main_df
+

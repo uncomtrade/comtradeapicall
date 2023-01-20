@@ -4,7 +4,8 @@ import shutil
 import gzip
 from pandas import json_normalize
 
-def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo):
+def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqCode, clCode, period, reporterCode,
+                     decompress, publishedDateFrom=None, publishedDateTo=None):
 
     if tradeDataType == 'TARIFFLINE':
         baseURLDataAvailability = 'https://comtradeapi.un.org/bulk/v1/getTariffline/' + typeCode + '/' + freqCode + '/' + clCode
@@ -55,7 +56,6 @@ def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqC
                     download_path = os.path.join(directory, fileName)
                     with open(download_path, "wb") as text:
                         for chunk in r.iter_content(chunk_size=1024):
-                            # writing one chunk at a time to pdf file
                             if chunk:
                                 text.write(chunk)
                     print(fileName.replace(".gz", "") + ' downloaded')
@@ -77,13 +77,13 @@ def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqC
         # catastrophic error. bail.
         raise SystemExit(e)
 
-def bulkDownloadFinalFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress):
+def bulkDownloadFinalFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom=None, publishedDateTo=None):
     bulkDownloadFile(subscription_key, directory, 'FINAL', typeCode, freqCode, clCode, period,
-                             reporterCode, decompress, None, None)
+                             reporterCode, decompress, publishedDateFrom, publishedDateTo)
 
-def bulkDownloadTarifflineFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress):
+def bulkDownloadTarifflineFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom=None, publishedDateTo=None):
     bulkDownloadFile(subscription_key, directory, 'TARIFFLINE', typeCode, freqCode, clCode, period,
-                             reporterCode, decompress, None, None)
+                             reporterCode, decompress, publishedDateFrom, publishedDateTo)
 
 def bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo):
     bulkDownloadFile(subscription_key, directory, 'FINAL', typeCode, freqCode, clCode, period,
@@ -92,4 +92,3 @@ def bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode, freqCo
 def bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo):
     bulkDownloadFile(subscription_key, directory, 'TARIFFLINE', typeCode, freqCode, clCode, period,
                              reporterCode, decompress, publishedDateFrom, publishedDateTo)
-

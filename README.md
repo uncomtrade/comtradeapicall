@@ -43,12 +43,29 @@ pip install comtradeapicall
    line
    data
    availability
+  - getFinalDataBulkAvailability(**subscription_key**, **SelectionCriteria**) : return data frame containing final bulk files data
+   availability
+  - getTarifflineDataBulkAvailability(**subscription_key**, **SelectionCriteria**) : return data frame containing tariff
+   line bulk files 
+   data
+   availability
+  - getLiveUpdate(**subscription_key**) : return data frame recent data releases
   
 - **BulkDownload:** Model class to download the data files
-  - bulkDownloadFinalData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**) : download/save
+  - bulkDownloadFinalData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download/save
    final data files to specified folder
-  - bulkDownloadTarifflineData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**) : download
+  - bulkDownloadTarifflineData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download
   /save tariff line data files to specified folder
+
+- **Async:** Model class to extract the data asynchronously (limited to 2.5M records) with email notification
+  - submitAsyncFinalDataRequest(**subscription_key**, **SelectionCriteria**, **query_option**) : submit a final data job
+  - submitAsyncTarifflineDataRequest(**subscription_key**, **SelectionCriteria**, **query_option**) : submit a tariff line data job
+  - checkAsyncDataRequest(**subscription_key**, **emailId**, **[batchId]**) : check status of submitted job
+  - downloadAsyncFinalDataRequest(**subscription_key**, **directory**, **email**, **SelectionCriteria**, **query_option**) : submit, wait and download the resulting final file
+  - downloadAsyncTarifflineDataRequest(**subscription_key**, **directory**, **email**, **SelectionCriteria**, **query_option**) : submit, wait and download the resulting  tariff line file
+ 
+- **Metadata:** Model class to extract metadata and publication notes
+  - getMetadata(**subscription_key**, **SelectionCriteria**, **showHistory**) : return data frame with metadata and publication notes
 
 See differences between final and tariff line data at the [Wiki](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+FAQ+for+First+Time+Users#NewComtradeFAQforFirstTimeUsers-Whatisthetarifflinedata?)
  
@@ -123,10 +140,78 @@ comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode
 ```  
 - Download all final annual data  in HS classification released yesterday
 ``` python
-comtradeapicall.bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
+yesterday = date.today() - timedelta(days=1)
+comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
                                               period=None, reporterCode=None, decompress=True,
-                                              publishedDateFrom='2023-01-14', publishedDateTo=None)
+                                              publishedDateFrom=yesterday, publishedDateTo=None)
 ```  
+- Show the recent releases
+``` python
+mydf = comtradeapicall.getLiveUpdate(subscription_key)
+```  
+- Extract final data availability in 2021
+``` python
+mydf = comtradeapicall.getFinalDataAvailability(subscription_key, typeCode='C', freqCode='A', clCode='HS',
+                                                         period='2021', reporterCode=None)
+```  
+- Extract tariff line data availability in June 2022
+``` python
+mydf = comtradeapicall.getTarifflineDataAvailability(subscription_key, typeCode='C', freqCode='M', clCode='HS',
+                                                        period='202206', reporterCode=None)
+``` 
+- Extract final bulk files data availability in 2021 for the SITC Rev.1 classification
+``` python
+mydf = comtradeapicall.getFinalDataBulkAvailability(subscription_key, typeCode='C', freqCode='A', clCode='S1',
+                                                         period='2021', reporterCode=None)
+``` 
+- Extract tariff line bulk files data availability in June 2022
+``` python
+mydf = comtradeapicall.getTarifflineDataBulkAvailability(subscription_key, typeCode='C', freqCode='M', clCode='HS',
+                                                        period='202206', reporterCode=None)
+``` 
+- Obtain all metadata and publication notes for May 2022
+``` python
+mydf = comtradeapicall.getMetadata(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
+                                                 reporterCode=None, showHistory=True)
+``` 
+- Submit asynchronous final data request
+``` python
+myJson = comtradeapicall.submitAsyncFinalDataRequest(subscription_key, typeCode='C', freqCode='M', clCode='HS',
+                                    period='202205',
+                                    reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=None,
+                                    partner2Code=None,
+                                    customsCode=None, motCode=None, aggregateBy=None, breakdownMode='classic')
+print("requestID: ",myJson['requestId'])
+``` 
+- Submit asynchronous tariff line data request
+``` python
+myJson = comtradeapicall.submitAsyncTarifflineDataRequest(subscription_key, typeCode='C', freqCode='M',
+                                                       clCode='HS',
+                                          period='202205',
+                                         reporterCode=None, cmdCode='91,90', flowCode='M', partnerCode=None,
+                                         partner2Code=None,
+                                         customsCode=None, motCode=None)
+print("requestID: ",myJson['requestId'])
+``` 
+- Check status of asynchronous job
+``` python
+mydf = comtradeapicall.checkAsyncDataRequest(subscription_key, emailId=email,
+                                          batchId ='2f92dd59-9763-474c-b27c-4af9ce16d454' )
+``` 
+- Submit final data  asynchronous job and download the resulting file
+``` python
+comtradeapicall.downloadAsyncFinalDataRequest(subscription_key, directory, email, typeCode='C', freqCode='M',
+                                        clCode='HS', period='202209', reporterCode=None, cmdCode='91,90',
+                                        flowCode='M', partnerCode=None, partner2Code=None,
+                                        customsCode=None, motCode=None)
+``` 
+- Submit tariffline data  asynchronous job and download the resulting file
+``` python
+comtradeapicall.downloadAsyncTarifflineDataRequest(subscription_key, directory, email, typeCode='C', freqCode='M',
+                                        clCode='HS', period='202209', reporterCode=None, cmdCode='91,90',
+                                        flowCode='M', partnerCode=None, partner2Code=None,
+                                        customsCode=None, motCode=None)
+``` 
 - Tests folder contain more examples including calculation of unit value
 
 ## Downloaded file name convention
@@ -139,6 +224,8 @@ As examples:
   - *COMTRADE-FINAL-CM504200003H1[2023-01-03]*
 - Tariffline merchandise trade from Morocco (code 504) in March 2000 released on 3 Jan 2023 coded using H1 classification: 
   - *COMTRADE-TARIFFLINE-CM504200003H1[2023-01-03]*
+
+Note: Async download retains the original batch id
 
 
 
