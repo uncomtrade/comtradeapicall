@@ -66,9 +66,9 @@ def submitAsyncTarifflineDataRequest(subscription_key, typeCode, freqCode, clCod
                                   partnerCode,
                                   partner2Code, customsCode, motCode, None, None)
 
-def checkAsyncDataRequest(subscription_key, emailId, batchId=None):
+def checkAsyncDataRequest(subscription_key, batchId=None):
     baseURL = 'https://comtradeapi.un.org/async/v1/getDA/'
-    PARAMS = dict(batchId=batchId, emailId=emailId)
+    PARAMS = dict(batchId=batchId)
     # add key
     PARAMS["subscription-key"] = subscription_key
     # print(PARAMS)
@@ -100,7 +100,7 @@ def checkAsyncDataRequest(subscription_key, emailId, batchId=None):
         # catastrophic error. bail.
         raise SystemExit(e)
 
-def downloadAsyncFinalDataRequest(subscription_key, directory, email, typeCode, freqCode, clCode, period,
+def downloadAsyncFinalDataRequest(subscription_key, directory, typeCode, freqCode, clCode, period,
                                   reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode,
                                   aggregateBy=None, breakdownMode=None):
     myJson = submitAsyncFinalDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode,
@@ -110,7 +110,7 @@ def downloadAsyncFinalDataRequest(subscription_key, directory, email, typeCode, 
     print("Processing and downloading the result. BatchId: ", batchId)
     status = ''
     while status != 'Completed' and status != 'Error':
-        mydf = checkAsyncDataRequest(subscription_key, emailId=email, batchId=batchId)
+        mydf = checkAsyncDataRequest(subscription_key, batchId=batchId)
         current_status = mydf.iloc[0]['status']
         if status != current_status:
             status = current_status
@@ -130,7 +130,7 @@ def downloadAsyncFinalDataRequest(subscription_key, directory, email, typeCode, 
     else:
         print('Error occurred when processing batchId: ', batchId)
 
-def downloadAsyncTarifflineDataRequest(subscription_key, directory, email, typeCode, freqCode, clCode, period,
+def downloadAsyncTarifflineDataRequest(subscription_key, directory, typeCode, freqCode, clCode, period,
                                   reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode):
     myJson = submitAsyncTarifflineDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode,
                                   cmdCode, flowCode,partnerCode,partner2Code, customsCode, motCode)
@@ -139,7 +139,7 @@ def downloadAsyncTarifflineDataRequest(subscription_key, directory, email, typeC
     print("Processing and downloading the result. BatchId: ", batchId)
     status = ''
     while status != 'Completed' and status != 'Error':
-        mydf = checkAsyncDataRequest(subscription_key, emailId=email, batchId=batchId)
+        mydf = checkAsyncDataRequest(subscription_key, batchId=batchId)
         current_status = mydf.iloc[0]['status']
         if status != current_status:
             status = current_status

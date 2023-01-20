@@ -6,7 +6,6 @@ import comtradeapicall
 
 subscription_key = '<YOUR KEY>' # comtrade api subscription key (from comtradedeveloper.un.org)
 directory = '<OUTPUT DIR>'  # output directory for downloaded files
-email = '<YOUR EMAIL>'
 # Call preview final data API to a data frame, max to 500 records, no subscription key required
 # This example: Australia imports of commodity code 91 in classic mode in May 2022
 mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202205',
@@ -139,19 +138,19 @@ myJson = comtradeapicall.submitAsyncTarifflineDataRequest(subscription_key, type
                                                           customsCode=None, motCode=None)
 print("requestID: ", myJson['requestId'])
 # check async status
-mydf = comtradeapicall.checkAsyncDataRequest(subscription_key, emailId=email,
+mydf = comtradeapicall.checkAsyncDataRequest(subscription_key,
                                              batchId='2f92dd59-9763-474c-b27c-4af9ce16d454')
 print(mydf.iloc[0]['status'])
 print(mydf.iloc[0]['uri'])
-mydf = comtradeapicall.checkAsyncDataRequest(subscription_key, emailId=email)
+mydf = comtradeapicall.checkAsyncDataRequest(subscription_key)
 print(len(mydf))
 # submit async and download the result (final data)
-comtradeapicall.downloadAsyncFinalDataRequest(subscription_key, directory, email, typeCode='C', freqCode='M',
+comtradeapicall.downloadAsyncFinalDataRequest(subscription_key, directory, typeCode='C', freqCode='M',
                                               clCode='HS', period='202209', reporterCode=None, cmdCode='91,90',
                                               flowCode='M', partnerCode=None, partner2Code=None,
                                               customsCode=None, motCode=None)
 # submit async and download the result (tariffline)
-comtradeapicall.downloadAsyncTarifflineDataRequest(subscription_key, directory, email, typeCode='C', freqCode='M',
+comtradeapicall.downloadAsyncTarifflineDataRequest(subscription_key, directory, typeCode='C', freqCode='M',
                                                    clCode='HS', period='202209', reporterCode=None, cmdCode='91,90',
                                                    flowCode='M', partnerCode=None, partner2Code=None,
                                                    customsCode=None, motCode=None)

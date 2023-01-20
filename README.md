@@ -60,9 +60,9 @@ pip install comtradeapicall
 - **Async:** Model class to extract the data asynchronously (limited to 2.5M records) with email notification
   - submitAsyncFinalDataRequest(**subscription_key**, **SelectionCriteria**, **query_option**) : submit a final data job
   - submitAsyncTarifflineDataRequest(**subscription_key**, **SelectionCriteria**, **query_option**) : submit a tariff line data job
-  - checkAsyncDataRequest(**subscription_key**, **emailId**, **[batchId]**) : check status of submitted job
-  - downloadAsyncFinalDataRequest(**subscription_key**, **directory**, **email**, **SelectionCriteria**, **query_option**) : submit, wait and download the resulting final file
-  - downloadAsyncTarifflineDataRequest(**subscription_key**, **directory**, **email**, **SelectionCriteria**, **query_option**) : submit, wait and download the resulting  tariff line file
+  - checkAsyncDataRequest(**subscription_key**, **[batchId]**) : check status of submitted job
+  - downloadAsyncFinalDataRequest(**subscription_key**, **directory**, **SelectionCriteria**, **query_option**) : submit, wait and download the resulting final file
+  - downloadAsyncTarifflineDataRequest(**subscription_key**, **directory**, **SelectionCriteria**, **query_option**) : submit, wait and download the resulting  tariff line file
  
 - **Metadata:** Model class to extract metadata and publication notes
   - getMetadata(**subscription_key**, **SelectionCriteria**, **showHistory**) : return data frame with metadata and publication notes
@@ -195,19 +195,19 @@ print("requestID: ",myJson['requestId'])
 ``` 
 - Check status of asynchronous job
 ``` python
-mydf = comtradeapicall.checkAsyncDataRequest(subscription_key, emailId=email,
+mydf = comtradeapicall.checkAsyncDataRequest(subscription_key, 
                                           batchId ='2f92dd59-9763-474c-b27c-4af9ce16d454' )
 ``` 
 - Submit final data  asynchronous job and download the resulting file
 ``` python
-comtradeapicall.downloadAsyncFinalDataRequest(subscription_key, directory, email, typeCode='C', freqCode='M',
+comtradeapicall.downloadAsyncFinalDataRequest(subscription_key, directory,  typeCode='C', freqCode='M',
                                         clCode='HS', period='202209', reporterCode=None, cmdCode='91,90',
                                         flowCode='M', partnerCode=None, partner2Code=None,
                                         customsCode=None, motCode=None)
 ``` 
 - Submit tariffline data  asynchronous job and download the resulting file
 ``` python
-comtradeapicall.downloadAsyncTarifflineDataRequest(subscription_key, directory, email, typeCode='C', freqCode='M',
+comtradeapicall.downloadAsyncTarifflineDataRequest(subscription_key, directory,  typeCode='C', freqCode='M',
                                         clCode='HS', period='202209', reporterCode=None, cmdCode='91,90',
                                         flowCode='M', partnerCode=None, partner2Code=None,
                                         customsCode=None, motCode=None)

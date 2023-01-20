@@ -1,6 +1,6 @@
 [project]
 name = "comtradeapicall"
-version = "1.0.12"
+version = "1.0.13"
 authors = [
   { name="untradestats", email="untradestats@gmail.com" },
 ]
