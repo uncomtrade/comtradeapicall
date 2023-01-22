@@ -154,3 +154,25 @@ comtradeapicall.downloadAsyncTarifflineDataRequest(subscription_key, directory, 
                                                    clCode='HS', period='202209', reporterCode=None, cmdCode='91,90',
                                                    flowCode='M', partnerCode=None, partner2Code=None,
                                                    customsCode=None, motCode=None)
+# download the list of reference tables
+mydf = comtradeapicall.listReference()
+print(mydf.head(5))
+print(len(mydf))
+mydf = comtradeapicall.listReference('cmd:B5')
+print(mydf.head(5))
+print(len(mydf))
+# download specific reference (list available at listReference())
+mydf = comtradeapicall.getReference('reporter')
+print(mydf.head(5))
+print(len(mydf))
+mydf = comtradeapicall.getReference('partner')
+print(mydf.head(5))
+print(len(mydf))
+# Convert country/area ISO3 to Comtrade code
+country_code = comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA')
+print(country_code)
+#use the convert function country_code in preview call
+mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202205',
+                                        reporterCode=comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA'), cmdCode='91', flowCode='M', partnerCode=None,
+                                        partner2Code=None,customsCode=None, motCode=None)
+print(mydf.head(5))

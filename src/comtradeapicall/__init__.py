@@ -31,4 +31,7 @@ from .DataAvailability import getTarifflineDataBulkAvailability
 from .DataAvailability import getLiveUpdate
 
 # Metadata module
-from .Metadata import  getMetadata
+from .Metadata import getMetadata
+from .Metadata import getReference
+from .Metadata import listReference
+from .Metadata import convertCountryIso3ToCode

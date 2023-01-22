@@ -66,6 +66,8 @@ pip install comtradeapicall
  
 - **Metadata:** Model class to extract metadata and publication notes
   - getMetadata(**subscription_key**, **SelectionCriteria**, **showHistory**) : return data frame with metadata and publication notes
+  - listReference(**[category]**) : return data frame containing list of references
+  - getReference(**category**) : return data frame with the contents of specific references
 
 See differences between final and tariff line data at the [Wiki](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+FAQ+for+First+Time+Users#NewComtradeFAQforFirstTimeUsers-Whatisthetarifflinedata?)
  
@@ -212,6 +214,21 @@ comtradeapicall.downloadAsyncTarifflineDataRequest(subscription_key, directory, 
                                         flowCode='M', partnerCode=None, partner2Code=None,
                                         customsCode=None, motCode=None)
 ``` 
+- View list of reference tables
+``` python
+mydf = comtradeapicall.listReference()
+mydf = comtradeapicall.listReference('cmd:B5')
+``` 
+- Download specific reference
+``` python
+mydf = comtradeapicall.getReference('reporter')
+mydf = comtradeapicall.getReference('partner')
+``` 
+- Convert country/area ISO3 to Comtrade code
+``` python
+country_code = comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA')
+``` 
+
 - Tests folder contain more examples including calculation of unit value
 
 ## Downloaded file name convention
