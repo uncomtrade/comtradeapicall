@@ -43,9 +43,9 @@ pip install comtradeapicall
    line
    data
    availability
-  - getFinalDataBulkAvailability(**subscription_key**, **SelectionCriteria**) : return data frame containing final bulk files data
+  - getFinalDataBulkAvailability(**subscription_key**, **SelectionCriteria**, **[publishedDateFrom]**, **[publishedDateTo]**) : return data frame containing final bulk files data
    availability
-  - getTarifflineDataBulkAvailability(**subscription_key**, **SelectionCriteria**) : return data frame containing tariff
+  - getTarifflineDataBulkAvailability(**subscription_key**, **SelectionCriteria**, **[publishedDateFrom]**, **[publishedDateTo]**) : return data frame containing tariff
    line bulk files 
    data
    availability
@@ -170,6 +170,29 @@ mydf = comtradeapicall.getFinalDataBulkAvailability(subscription_key, typeCode='
 ``` python
 mydf = comtradeapicall.getTarifflineDataBulkAvailability(subscription_key, typeCode='C', freqCode='M', clCode='HS',
                                                         period='202206', reporterCode=None)
+``` 
+- List data availabity from last week for reference year 2021
+``` python
+mydf = comtradeapicall.getFinalDataAvailability(subscription_key, typeCode='C', freqCode='A', clCode='HS',period='2021', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+``` 
+- List tariffline data availabity from last week for reference period June 2022
+``` python
+mydf = comtradeapicall.getTarifflineDataAvailability(subscription_key, typeCode='C', freqCode='M',
+                                                        clCode='HS',
+                                                        period='202206', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+``` 
+- List bulk data availability for SITC Rev.1 for reference year 2021 released since last week
+``` python
+mydf = comtradeapicall.getFinalDataBulkAvailability(subscription_key, typeCode='C', freqCode='A',
+                                                    clCode='S1',
+                                                    period='2021', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+``` 
+- List bulk tariffline data availability from last week for reference period June 2022
+``` python
+mydf = comtradeapicall.getTarifflineDataBulkAvailability(subscription_key, typeCode='C', freqCode='M',
+                                                            clCode='HS',
+                                                            period='202206', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+
 ``` 
 - Obtain all metadata and publication notes for May 2022
 ``` python

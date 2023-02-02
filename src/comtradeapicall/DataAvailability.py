@@ -39,7 +39,7 @@ def getLiveUpdate(subscription_key):
         # catastrophic error. bail.
         raise SystemExit(e)
 
-def getDataAvailability(subscription_key, tradeDataType, dataAvailabilityType, typeCode, freqCode, clCode, period, reporterCode):
+def getDataAvailability(subscription_key, tradeDataType, dataAvailabilityType, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo):
     if dataAvailabilityType=='BULK':
         if tradeDataType == 'TARIFFLINE':
             baseURL = 'https://comtradeapi.un.org/bulk/v1/getTariffline/' + typeCode + '/' + freqCode + '/' + clCode
@@ -51,7 +51,7 @@ def getDataAvailability(subscription_key, tradeDataType, dataAvailabilityType, t
         else:
             baseURL = 'https://comtradeapi.un.org/data/v1/getDa/' + typeCode + '/' + freqCode + '/' + clCode
 
-    PARAMS = dict(reportercode=reporterCode, period=period)
+    PARAMS = dict(reportercode=reporterCode, period=period, publishedDateFrom=publishedDateFrom, publishedDateTo=publishedDateTo)
     # add key
     PARAMS["subscription-key"] = subscription_key
     # print(PARAMS)
@@ -84,14 +84,14 @@ def getDataAvailability(subscription_key, tradeDataType, dataAvailabilityType, t
         # catastrophic error. bail.
         raise SystemExit(e)
 
-def getFinalDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode):
-    return getDataAvailability(subscription_key, 'FINAL', None, typeCode, freqCode, clCode, period, reporterCode)
+def getFinalDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
+    return getDataAvailability(subscription_key, 'FINAL', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
 
-def getTarifflineDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode):
-    return getDataAvailability(subscription_key, 'TARIFFLINE', None, typeCode, freqCode, clCode, period, reporterCode)
+def getTarifflineDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
+    return getDataAvailability(subscription_key, 'TARIFFLINE', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
 
-def getFinalDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode):
-    return getDataAvailability(subscription_key, 'FINAL', 'BULK', typeCode, freqCode, clCode, period, reporterCode)
+def getFinalDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
+    return getDataAvailability(subscription_key, 'FINAL', 'BULK', typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
 
-def getTarifflineDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode):
-    return getDataAvailability(subscription_key, 'TARIFFLINE', 'BULK', typeCode, freqCode, clCode, period, reporterCode)
+def getTarifflineDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
+    return getDataAvailability(subscription_key, 'TARIFFLINE', 'BULK', typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)

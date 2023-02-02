@@ -6,6 +6,15 @@ import comtradeapicall
 
 subscription_key = '<YOUR KEY>' # comtrade api subscription key (from comtradedeveloper.un.org)
 directory = '<OUTPUT DIR>'  # output directory for downloaded files
+
+#set some variables
+from datetime import date
+from datetime import timedelta
+today = date.today()
+yesterday = today - timedelta(days=1)
+lastweek = today - timedelta(days=7)
+
+
 # Call preview final data API to a data frame, max to 500 records, no subscription key required
 # This example: Australia imports of commodity code 91 in classic mode in May 2022
 mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202205',
@@ -176,3 +185,26 @@ mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS',
                                         reporterCode=comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA'), cmdCode='91', flowCode='M', partnerCode=None,
                                         partner2Code=None,customsCode=None, motCode=None)
 print(mydf.head(5))
+# list data availabity from last week for reference year 2021
+mydf = comtradeapicall.getFinalDataAvailability(subscription_key, typeCode='C', freqCode='A', clCode='HS',
+                                                period='2021', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+print(mydf.head(5))
+print(len(mydf))
+# list tariffline data availabity from last week for reference period June 2022
+mydf = comtradeapicall.getTarifflineDataAvailability(subscription_key, typeCode='C', freqCode='M',
+                                                        clCode='HS',
+                                                        period='202206', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+print(mydf.head(5))
+print(len(mydf))
+# list bulk data availability for SITC Rev.1 for reference year 2021 released since last week
+mydf = comtradeapicall.getFinalDataBulkAvailability(subscription_key, typeCode='C', freqCode='A',
+                                                    clCode='S1',
+                                                    period='2021', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+print(mydf.head(5))
+print(len(mydf))
+# list bulk tariffline data availability from last week for reference period June 2022
+mydf = comtradeapicall.getTarifflineDataBulkAvailability(subscription_key, typeCode='C', freqCode='M',
+                                                            clCode='HS',
+                                                            period='202206', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+print(mydf.head(5))
+print(len(mydf))
