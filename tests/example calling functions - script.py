@@ -208,3 +208,8 @@ mydf = comtradeapicall.getTarifflineDataBulkAvailability(subscription_key, typeC
                                                             period='202206', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
 print(mydf.head(5))
 print(len(mydf))
+# Get the Standard unit value (qtyUnitCode 8 [kg]) for commodity 010391 in 2022
+mydf = comtradeapicall.getSUV(subscription_key,
+                              period='2022', cmdCode='010391', flowCode=None, qtyUnitCode=8)
+print(mydf.head(5))
+print(len(mydf))

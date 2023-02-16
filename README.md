@@ -69,6 +69,9 @@ pip install comtradeapicall
   - listReference(**[category]**) : return data frame containing list of references
   - getReference(**category**) : return data frame with the contents of specific references
 
+- **SUV:** Model class to extract data on Standard Unit Values (SUV) and their ranges
+  - getSUV(**subscription_key**, **SelectionCriteria**, **[qtyUnitCode]**) : return data frame with SUV data
+
 See differences between final and tariff line data at the [Wiki](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+FAQ+for+First+Time+Users#NewComtradeFAQforFirstTimeUsers-Whatisthetarifflinedata?)
  
 ## Selection Criteria
@@ -250,6 +253,10 @@ mydf = comtradeapicall.getReference('partner')
 - Convert country/area ISO3 to Comtrade code
 ``` python
 country_code = comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA')
+``` 
+- Get the Standard unit value (qtyUnitCode 8 [kg]) for commodity 010391 in 2022
+``` python
+mydf = comtradeapicall.getSUV(subscription_key, period='2022', cmdCode='010391', flowCode=None, qtyUnitCode=8)
 ``` 
 
 - Tests folder contain more examples including calculation of unit value

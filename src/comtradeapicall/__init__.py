@@ -35,3 +35,6 @@ from .Metadata import getMetadata
 from .Metadata import getReference
 from .Metadata import listReference
 from .Metadata import convertCountryIso3ToCode
+
+# SUV module
+from .SUV import getSUV
