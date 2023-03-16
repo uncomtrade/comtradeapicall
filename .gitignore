@@ -1,0 +1,20 @@
+.idea/.gitignore
+.idea/comtradeapicall.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/shelf/Uncommitted_changes_before_Update_at_21_01_2023_5_38_PM__Default_Changelist_.xml
+.idea/shelf/Uncommitted_changes_before_Update_at_21_01_2023_5_38_PM_[Default_Changelist]/shelved.patch
+src/comtradeapicall.egg-info/dependency_links.txt
+src/comtradeapicall.egg-info/PKG-INFO
+src/comtradeapicall.egg-info/PKG-INFO-W10LT-PF2ZCSNL
+src/comtradeapicall.egg-info/SOURCES.txt
+src/comtradeapicall.egg-info/top_level.txt
+tests/.ipynb_checkpoints/example calculating unit value-checkpoint.ipynb
+tests/.ipynb_checkpoints/example calling functions - notebook-checkpoint.ipynb
+tests/.ipynb_checkpoints/example in notebook-checkpoint.ipynb
+dist/comtradeapicall-1.0.18-py3-none-any.whl
+dist/comtradeapicall-1.0.18.tar.gz
+.idea/shelf/Uncommitted_changes_before_Update_at_21_01_2023_5_38_PM_[Default_Changelist]/shelved.patch
+.idea/shelf/Uncommitted_changes_before_Update_at_21_01_2023_5_38_PM_[Default_Changelist]/shelved.patch
