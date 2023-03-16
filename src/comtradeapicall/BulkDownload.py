@@ -43,16 +43,22 @@ def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqC
                     # print(file_url)
                     PARAMS = dict()
                     PARAMS["subscription-key"] = subscription_key
-                    r = requests.get(file_url, params=PARAMS, stream=True)
+                    r = requests.get(file_url, params=PARAMS, stream=True)        
                     if tradeDataType == 'TARIFFLINE':
+                        if (df.timestamp[i] is None):
+                            timestamp = '1900-01-01'
+                        else:
+                            timestamp = df.timestamp[i][:10]  
                         fileName = "COMTRADE-" + prefixFile + "-" + df.typeCode[i] + df.freqCode[i] + str(df.reporterCode[i]).zfill(
-                            3) + str(df.period[i]) + df.classificationCode[i] + "[" + df.timestamp[i][
-                                                                                                :10] + "].gz"
+                            3) + str(df.period[i]) + df.classificationCode[i] + "[" + timestamp + "].gz"
                     else:
+                        if (df.publicationDate[i] is None):
+                            publicationDate = '1900-01-01'
+                        else:
+                            publicationDate = df.publicationDate[i][:10]                          
                         fileName = "COMTRADE-" + prefixFile + "-" + df.typeCode[i] + df.freqCode[i] + str(
                             df.reporterCode[i]).zfill(
-                            3) + str(df.period[i]) + df.classificationCode[i] + "[" + df.publicationDate[i][
-                                                                                      :10] + "].gz"
+                            3) + str(df.period[i]) + df.classificationCode[i] + "[" + publicationDate + "].gz"
                     download_path = os.path.join(directory, fileName)
                     with open(download_path, "wb") as text:
                         for chunk in r.iter_content(chunk_size=1024):
