@@ -3,7 +3,7 @@ This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.
  (and much more). 
 
 ## Details
-[UN Commtrade](https://comtrade.un.org) provides free and premium APIs to extract and download data/metadata, however
+[UN Comtrade](https://comtrade.un.org) provides free and premium APIs to extract and download data/metadata, however
  it is quite a learning curve to understand all of APIs end-points and parameters. This package simplifies it by
   calling a single python function with the appropriate parameters. Learn more about UN Comtrade at the [UN Comtrade wiki](https://unstats.un.org/wiki/display/comtrade/UN+Comtrade).
 
@@ -72,6 +72,9 @@ pip install comtradeapicall
 - **SUV:** Model class to extract data on Standard Unit Values (SUV) and their ranges
   - getSUV(**subscription_key**, **SelectionCriteria**, **[qtyUnitCode]**) : return data frame with SUV data
 
+- **AIS:** Model class to extract experimental trade data generated from AIS (ships tracking movement). See [Cerdeiro, Komaromi, Liu and Saeed (2020)](https://www.imf.org/en/Publications/WP/Issues/2020/05/14/World-Seaborne-Trade-in-Real-Time-A-Proof-of-Concept-for-Building-AIS-based-Nowcasts-from-49393). *When consuming the data, users should understand its limitation.*  
+  - getAIS(**subscription_key**, **AISSelectionCriteria**, **[vesselTypeCode]**) : return data frame with AIS trade data
+
 See differences between final and tariff line data at the [Wiki](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+FAQ+for+First+Time+Users#NewComtradeFAQforFirstTimeUsers-Whatisthetarifflinedata?)
  
 ## Selection Criteria
@@ -94,6 +97,14 @@ See differences between final and tariff line data at the [Wiki](https://unstats
 - breakdownMode(str) : Option to select the classic (trade by partner/product) or plus (extended breakdown) mode
 - countOnly(bool) : Return the actual number of records if set to True 
 - includeDesc(bool) : Option to include the description or not
+
+## AIS Selection Criteria
+- typeCode(str) : Product type. Only Goods (C)
+- freqCode(str) : The time interval at which observations occur. Daily (D)
+- datefrom(str) and dateto(str) :  Date(s) of observation - ASCII format
+- countryareaCode(str) : The country or geographic area to which the measured statistical phenomenon relates. Use *getReference('ais:countriesareas')* for the complete list.
+- vesselTypeCode(str) : The high level categorization of vessels transporting the goods. Use *getReference('ais:vesseltypes')* for the complete list.
+- flowCode(str) : Trade flow (exports, imports)
  
 ## Examples of python usage
 - Extract Australia imports of commodity code 91 in classic mode in May 2022
@@ -258,7 +269,10 @@ country_code = comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA')
 ``` python
 mydf = comtradeapicall.getSUV(subscription_key, period='2022', cmdCode='010391', flowCode=None, qtyUnitCode=8)
 ``` 
-
+- Get number of port calls and trade volume estimates derrived from AIS data for Australia between 1 and 8 February 2023 with vessel types bulk and container.
+``` python
+mydf = comtradeapicall.getAIS(subscription_key, countryareaCode=36, vesselTypeCode='1,2', dateFrom='2023-02-01', dateTo='2023-02-08')
+``` 
 - Tests folder contain more examples including calculation of unit value
 
 ## Downloaded file name convention

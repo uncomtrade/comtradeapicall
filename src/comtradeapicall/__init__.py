@@ -38,3 +38,6 @@ from .Metadata import convertCountryIso3ToCode
 
 # SUV module
 from .SUV import getSUV
+
+# AIS module
+from .AIS import getAIS

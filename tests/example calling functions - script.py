@@ -213,3 +213,8 @@ mydf = comtradeapicall.getSUV(subscription_key,
                               period='2022', cmdCode='010391', flowCode=None, qtyUnitCode=8)
 print(mydf.head(5))
 print(len(mydf))
+# Get number of port calls and trade volume estimates derrived from AIS data for Australia between 1 and 8 February 2023 with vessel types bulk and container.
+mydf = comtradeapicall.getReference('ais:dataitems')
+print(mydf.head(5))
+mydf = comtradeapicall.getAIS(subscription_key, countryareaCode=36, vesselTypeCode='1,2', dateFrom='2023-02-01', dateTo='2023-02-08')
+print(mydf.head(5))
