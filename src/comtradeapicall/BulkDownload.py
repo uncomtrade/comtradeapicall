@@ -83,18 +83,18 @@ def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqC
         # catastrophic error. bail.
         raise SystemExit(e)
 
-def bulkDownloadFinalFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom=None, publishedDateTo=None):
+def bulkDownloadFinalFile(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None):
     bulkDownloadFile(subscription_key, directory, 'FINAL', typeCode, freqCode, clCode, period,
                              reporterCode, decompress, publishedDateFrom, publishedDateTo)
 
-def bulkDownloadTarifflineFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom=None, publishedDateTo=None):
+def bulkDownloadTarifflineFile(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None):
     bulkDownloadFile(subscription_key, directory, 'TARIFFLINE', typeCode, freqCode, clCode, period,
                              reporterCode, decompress, publishedDateFrom, publishedDateTo)
 
-def bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo):
+def bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None):
     bulkDownloadFile(subscription_key, directory, 'FINAL', typeCode, freqCode, clCode, period,
                              reporterCode, decompress, publishedDateFrom, publishedDateTo)
 
-def bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo):
+def bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None):
     bulkDownloadFile(subscription_key, directory, 'TARIFFLINE', typeCode, freqCode, clCode, period,
                              reporterCode, decompress, publishedDateFrom, publishedDateTo)
