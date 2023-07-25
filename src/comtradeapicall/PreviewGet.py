@@ -37,7 +37,7 @@ def getPreviewData(subscription_key, tradeDataType, typeCode, freqCode, clCode, 
         print("Only JSON output is supported with this function")
     else:
         try:
-            resp = requests.get(baseURL, params=PARAMS, timeout=120)
+            resp = requests.get(baseURL, params=PARAMS, timeout=18000)
             # print(resp.text)
             # print(resp.url)
             if resp.status_code != 200:
