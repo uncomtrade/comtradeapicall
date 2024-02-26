@@ -1,35 +1,23 @@
-import json
-import time as t
-from datetime import datetime
 import pandas as pd
+import json
 from pandas import json_normalize
-import requests
 import urllib3
+
 
 
 def getMetadata(subscription_key, typeCode, freqCode, clCode, period, reporterCode, showHistory):
     baseURL = 'https://comtradeapi.un.org/data/v1/getMetadata/' + typeCode + '/' + freqCode + '/' + clCode
     PARAMS = dict(reporterCode=reporterCode, period=period)
-    # add key
     PARAMS["subscription-key"] = subscription_key
-    # print(PARAMS)
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))  
+    http = urllib3.PoolManager()
     try:
-        resp = requests.get(baseURL, params=PARAMS, timeout=120)
-        # print(resp.text)
-        # print(resp.url)
-        if resp.status_code != 200:
-            # This means something went wrong.
-            jsonResult = resp.json()
-            print('Error in calling API:', resp.url)
-            try:
-                print('Error code:', jsonResult['statusCode'])
-                print('Error message:', jsonResult['message'])
-            except:
-                t.sleep(1)
+        resp = http.request("GET",baseURL, fields = fields, timeout=120)
+        if resp.status != 200:
+            print(resp.data.decode('utf-8'))
         else:
-            jsonResult = resp.json()
-            df = json_normalize(jsonResult['data'])  # Results contain the required data
-            # Get the notes only
+            jsonResult = json.loads(resp.data)
+            df = json_normalize(jsonResult['data'])
             FIELDS = ['notes']
             dt = df[FIELDS]
             dt = dt.explode('notes')
@@ -44,45 +32,26 @@ def getMetadata(subscription_key, typeCode, freqCode, clCode, period, reporterCo
                 return df_final_merge
             else:
                 return df_final_merge[df_final_merge.notnull()].query('isLatestPublication==True')
-    except requests.exceptions.Timeout:
-        # Maybe set up for a retry, or continue in a retry loop
-        print('Request failed due to timeout')
-    except requests.exceptions.TooManyRedirects:
-        # Tell the user their URL was bad and try a different one
-        print('Request failed due to too many redirects')
-    except requests.exceptions.RequestException as e:
-        # catastrophic error. bail.
-        raise SystemExit(e)
+    except urllib3.exceptions.RequestError as err:
+        print(f'Request error: {err}')
 
 def listReference(category=None):
     baseURL = 'https://comtradeapi.un.org/files/v1/app/reference/ListofReferences.json'
     try:
-        resp = requests.get(baseURL, timeout=120)
-        # print(resp.text)
-        # print(resp.url)
-        if resp.status_code != 200:
-            # This means something went wrong.
-            try:
-                print('Error in calling API:', resp.url)
-            except:
-                t.sleep(1)
+        http = urllib3.PoolManager()
+        resp = http.request("GET",baseURL, timeout=120)
+        if resp.status != 200:
+            print(resp.data.decode('utf-8'))
         else:
             resp.encoding = 'utf-8-sig'
-            jsonResult = resp.json()
-            df = json_normalize(jsonResult['results'])  # Results contain the required data
+            jsonResult = json.loads(resp.data)
+            df = json_normalize(jsonResult['results'])
             if category is not None:
                 return df.query("category=='" + category + "'")
             else:
                 return df
-    except requests.exceptions.Timeout:
-        # Maybe set up for a retry, or continue in a retry loop
-        print('Request failed due to timeout')
-    except requests.exceptions.TooManyRedirects:
-        # Tell the user their URL was bad and try a different one
-        print('Request failed due to too many redirects')
-    except requests.exceptions.RequestException as e:
-        # catastrophic error. bail.
-        raise SystemExit(e)
+    except urllib3.exceptions.RequestError as err:
+        print(f'Request error: {err}')
 
 def getReference(category):
     try:
@@ -92,34 +61,23 @@ def getReference(category):
         print('Error in looking up the file URI for', category)
     if baseURL != '':
         try:
-            resp = requests.get(baseURL, timeout=120)
-            # print(resp.text)
-            # print(resp.url)
-            if resp.status_code != 200:
-                # This means something went wrong.
-                try:
-                    print('Error in calling API:', resp.url)
-                except:
-                    t.sleep(1)
+            http = urllib3.PoolManager()
+            resp = http.request("GET",baseURL, timeout=120)
+            if resp.status != 200:
+                print(resp.data.decode('utf-8'))
             else:
                 resp.encoding = 'utf-8-sig'
-                jsonResult = resp.json()
+                jsonResult = json.loads(resp.data)
                 df = json_normalize(jsonResult['results'])  # Results contain the required data
                 return df
-        except requests.exceptions.Timeout:
-            # Maybe set up for a retry, or continue in a retry loop
-            print('Request failed due to timeout')
-        except requests.exceptions.TooManyRedirects:
-            # Tell the user their URL was bad and try a different one
-            print('Request failed due to too many redirects')
-        except requests.exceptions.RequestException as e:
-            # catastrophic error. bail.
-            raise SystemExit(e)
+        except urllib3.exceptions.RequestError as err:
+            print(f'Request error: {err}')
 
 def convertCountryIso3ToCode(countryIsoCode):
     baseURL = 'https://comtradeapi.un.org/files/v1/app/reference/country_area_code_iso.json'
-    resp = requests.get(baseURL, timeout=120)
-    df = json_normalize(resp.json()['results'])
+    http = urllib3.PoolManager()
+    resp = http.request("GET",baseURL, timeout=120)
+    df = json_normalize(json.loads(resp.data)['results'])
     df['country_area_code'] = df['country_area_code'].astype(str)
     delim = ','
     iso_string = countryIsoCode

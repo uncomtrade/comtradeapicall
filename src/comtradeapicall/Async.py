@@ -1,12 +1,10 @@
-import json
 import time as t
-from datetime import datetime
-import pandas
 from pandas import json_normalize
-import requests
 import os
 from urllib.parse import urlparse
-
+import json
+import urllib3
+import shutil
 
 def submitAsyncDataRequest(subscription_key, endPoint, typeCode, freqCode, clCode, period, reporterCode, cmdCode,
                    flowCode, partnerCode, partner2Code, customsCode, motCode, aggregateBy, breakdownMode):
@@ -15,40 +13,22 @@ def submitAsyncDataRequest(subscription_key, endPoint, typeCode, freqCode, clCod
     else:
         baseURL = 'https://comtradeapi.un.org/async/v1/get/' + typeCode + '/' + freqCode + '/' + clCode
 
-
     PARAMS = dict(reportercode=reporterCode, flowCode=flowCode,
                   period=period, cmdCode=cmdCode, partnerCode=partnerCode, partner2Code=partner2Code,
                   motCode=motCode, customsCode=customsCode, aggregateBy=aggregateBy, breakdownMode=breakdownMode)
-    # add key
     PARAMS["subscription-key"] = subscription_key
-    # print(PARAMS)
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))  
+    http = urllib3.PoolManager()
     try:
-        resp = requests.get(baseURL, params=PARAMS, timeout=120)
-        # print(resp.status_code)
-        # print(resp.text)
-        # print(resp.url)
-        if resp.status_code != 202:
-            # This means something went wrong.
-            jsonResult = resp.json()
-            print('Error in calling API:', resp.url)
-            try:
-                print('Error code:', jsonResult['statusCode'])
-                print('Error message:', jsonResult['message'])
-            except:
-                t.sleep(1)
+        resp = http.request("GET",baseURL, fields = fields, timeout=120)
+        if resp.status != 202:
+            print(resp.data.decode('utf-8'))
         else:
-            jsonResult = resp.json()
+            jsonResult = json.loads(resp.data)
             print('Return message:', jsonResult['message'])
             return jsonResult
-    except requests.exceptions.Timeout:
-        # Maybe set up for a retry, or continue in a retry loop
-        print('Request failed due to timeout')
-    except requests.exceptions.TooManyRedirects:
-        # Tell the user their URL was bad and try a different one
-        print('Request failed due to too many redirects')
-    except requests.exceptions.RequestException as e:
-        # catastrophic error. bail.
-        raise SystemExit(e)
+    except urllib3.exceptions.RequestError as err:
+        print(f'Request error: {err}')
 
 def submitAsyncFinalDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                               partnerCode,
@@ -69,36 +49,19 @@ def submitAsyncTarifflineDataRequest(subscription_key, typeCode, freqCode, clCod
 def checkAsyncDataRequest(subscription_key, batchId=None):
     baseURL = 'https://comtradeapi.un.org/async/v1/getDA/'
     PARAMS = dict(batchId=batchId)
-    # add key
     PARAMS["subscription-key"] = subscription_key
-    # print(PARAMS)
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))  
+    http = urllib3.PoolManager()
     try:
-        resp = requests.get(baseURL, params=PARAMS, timeout=120)
-        # print(resp.status_code)
-        # print(resp.text)
-        # print(resp.url)
-        if resp.status_code != 200:
-            # This means something went wrong.
-            jsonResult = resp.json()
-            print('Error in calling API:', resp.url)
-            try:
-                print('Error code:', jsonResult['statusCode'])
-                print('Error message:', jsonResult['message'])
-            except:
-                t.sleep(1)
+        resp = http.request("GET",baseURL, fields = fields, timeout=120)
+        if resp.status != 200:
+            print(resp.data.decode('utf-8'))
         else:
-            jsonResult = resp.json()
-            df = json_normalize(jsonResult['data'])  # Results contain the required data
+            jsonResult = json.loads(resp.data)
+            df = json_normalize(jsonResult['data'])
             return df
-    except requests.exceptions.Timeout:
-        # Maybe set up for a retry, or continue in a retry loop
-        print('Request failed due to timeout')
-    except requests.exceptions.TooManyRedirects:
-        # Tell the user their URL was bad and try a different one
-        print('Request failed due to too many redirects')
-    except requests.exceptions.RequestException as e:
-        # catastrophic error. bail.
-        raise SystemExit(e)
+    except urllib3.exceptions.RequestError as err:
+        print(f'Request error: {err}')
 
 def downloadAsyncFinalDataRequest(subscription_key, directory, typeCode, freqCode, clCode, period,
                                   reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode,
@@ -106,7 +69,6 @@ def downloadAsyncFinalDataRequest(subscription_key, directory, typeCode, freqCod
     myJson = submitAsyncFinalDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode,
                                   cmdCode, flowCode,partnerCode,partner2Code, customsCode, motCode, aggregateBy, breakdownMode)
     batchId = myJson['requestId']
-    # check status -- looping
     print("Processing and downloading the result. BatchId: ", batchId)
     status = ''
     while status != 'Completed' and status != 'Error':
@@ -121,11 +83,12 @@ def downloadAsyncFinalDataRequest(subscription_key, directory, typeCode, freqCod
         a = urlparse(url)
         fileName = os.path.basename(a.path)
         download_path = os.path.join(directory, fileName)
-        r = requests.get(url, stream=True)
-        with open(download_path, "wb") as text:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    text.write(chunk)
+        #download file
+        httpFILE = urllib3.PoolManager()
+        with open(download_path, 'wb') as out:
+            r = httpFILE.request('GET', url, preload_content=False)
+            shutil.copyfileobj(r, out)
+        r.release_conn()
         print(fileName, ' downloaded successfully')
     else:
         print('Error occurred when processing batchId: ', batchId)
@@ -150,11 +113,12 @@ def downloadAsyncTarifflineDataRequest(subscription_key, directory, typeCode, fr
         a = urlparse(url)
         fileName = os.path.basename(a.path)
         download_path = os.path.join(directory, fileName)
-        r = requests.get(url, stream=True)
-        with open(download_path, "wb") as text:
-            for chunk in r.iter_content(chunk_size=1024):
-                if chunk:
-                    text.write(chunk)
+        #download file
+        httpFILE = urllib3.PoolManager()
+        with open(download_path, 'wb') as out:
+            r = httpFILE.request('GET', url, preload_content=False)
+            shutil.copyfileobj(r, out)
+        r.release_conn()
         print(fileName, ' downloaded successfully')
     else:
         print('Error occurred when processing batchId: ', batchId)

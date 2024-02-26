@@ -1,43 +1,23 @@
 import json
-import pandas
 from pandas import json_normalize
-import requests
-import time as t
+import urllib3
 
 def getLiveUpdate(subscription_key):
     baseURL = 'https://comtradeapi.un.org/data/v1/getLiveUpdate'
-    # add key
     PARAMS = dict()
     PARAMS["subscription-key"] = subscription_key
-    # print(PARAMS)
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))  
+    http = urllib3.PoolManager()
     try:
-        resp = requests.get(baseURL, params=PARAMS, timeout=120)
-        # print(resp.text)
-        # print(resp.url)
-        if resp.status_code != 200:
-            # This means something went wrong.
-            jsonResult = resp.json()
-            print('Error in calling API:', resp.url)
-            try:
-                print('Error code:', jsonResult['statusCode'])
-                print('Error message:', jsonResult['message'])
-            except:
-                t.sleep(1)
+        resp = http.request("GET",baseURL, fields = fields, timeout=120)
+        if resp.status != 200:
+            print(resp.data.decode('utf-8'))
         else:
-            jsonResult = resp.json()
-            df = json_normalize(jsonResult['data'])  # Results contain the required data
-            # print(df.head())
-            # print(df.describe())
+            jsonResult = json.loads(resp.data)
+            df = json_normalize(jsonResult['data'])
             return df
-    except requests.exceptions.Timeout:
-        # Maybe set up for a retry, or continue in a retry loop
-        print('Request failed due to timeout')
-    except requests.exceptions.TooManyRedirects:
-        # Tell the user their URL was bad and try a different one
-        print('Request failed due to too many redirects')
-    except requests.exceptions.RequestException as e:
-        # catastrophic error. bail.
-        raise SystemExit(e)
+    except urllib3.exceptions.RequestError as err:
+        print(f'Request error: {err}')
 
 def getDataAvailability(subscription_key, tradeDataType, dataAvailabilityType, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo):
     if dataAvailabilityType=='BULK':
@@ -52,37 +32,19 @@ def getDataAvailability(subscription_key, tradeDataType, dataAvailabilityType, t
             baseURL = 'https://comtradeapi.un.org/data/v1/getDa/' + typeCode + '/' + freqCode + '/' + clCode
 
     PARAMS = dict(reportercode=reporterCode, period=period, publishedDateFrom=publishedDateFrom, publishedDateTo=publishedDateTo)
-    # add key
     PARAMS["subscription-key"] = subscription_key
-    # print(PARAMS)
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))  
+    http = urllib3.PoolManager()
     try:
-        resp = requests.get(baseURL, params=PARAMS, timeout=120)
-        # print(resp.text)
-        # print(resp.url)
-        if resp.status_code != 200:
-            # This means something went wrong.
-            jsonResult = resp.json()
-            print('Error in calling API:', resp.url)
-            try:
-                print('Error code:', jsonResult['statusCode'])
-                print('Error message:', jsonResult['message'])
-            except:
-                t.sleep(1)
+        resp = http.request("GET", baseURL, fields = fields, timeout=120)
+        if resp.status != 200:
+            print(resp.data.decode('utf-8'))
         else:
-            jsonResult = resp.json()
-            df = json_normalize(jsonResult['data'])  # Results contain the required data
-            # print(df.head())
-            # print(df.describe())
+            jsonResult = json.loads(resp.data)
+            df = json_normalize(jsonResult['data'])
             return df
-    except requests.exceptions.Timeout:
-        # Maybe set up for a retry, or continue in a retry loop
-        print('Request failed due to timeout')
-    except requests.exceptions.TooManyRedirects:
-        # Tell the user their URL was bad and try a different one
-        print('Request failed due to too many redirects')
-    except requests.exceptions.RequestException as e:
-        # catastrophic error. bail.
-        raise SystemExit(e)
+    except urllib3.exceptions.RequestError as err:
+        print(f'Request error: {err}')
 
 def getFinalDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
     return getDataAvailability(subscription_key, 'FINAL', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
