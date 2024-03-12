@@ -82,6 +82,10 @@ print(mydf.head(5))
 # This example: Download monthly France final data of Jan-2000
 comtradeapicall.bulkDownloadFinalFile(subscription_key, directory, typeCode='C', freqCode='M', clCode='HS',
                                       period='200001', reporterCode=251, decompress=True)
+# Call bulk download final file(s) API to output dir, (premium) subscription key required
+# This example: Download monthly France final classic data of Jan-2000
+comtradeapicall.bulkDownloadFinalClassicFile(subscription_key, directory, typeCode='C', freqCode='M', clCode='HS',
+                                      period='200001', reporterCode=251, decompress=True)
 # Call bulk download tariff data file(s) to output dir, (premium) subscription key required
 # This example: Download monthly France tariffline data of Jan-Mar 2000
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='M', clCode='HS',
@@ -91,14 +95,21 @@ comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode
 comtradeapicall.bulkDownloadTarifflineFile(subscription_key, directory, typeCode='C', freqCode='A', clCode='HS',
                                            period='2010', reporterCode=504, decompress=True)
 # Call bulk download tariff data file(s) to output dir, (premium) subscription key required
-# This example: Download HS annual data released since  yesterday
+# This example: Download HS annual data released since  yesterday in three different sets Final, FinalClassic and Tariffline
 from datetime import date
 from datetime import timedelta
 yesterday = date.today() - timedelta(days=1)
+# Download data in PLUS bulk file format
 comtradeapicall.bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode='C', freqCode='A',
                                                clCode='HS',
                                                period=None, reporterCode=None, decompress=False,
                                                publishedDateFrom=yesterday, publishedDateTo=None)
+# Download data in CLASSIC bulk file format
+comtradeapicall.bulkDownloadFinalClassicFile(subscription_key, directory, typeCode='C', freqCode='A',
+                                                clCode='HS',
+                                        period=None, reporterCode=None, decompress=False,
+                                        publishedDateFrom=yesterday, publishedDateTo=None)
+# Download data in TARIFFLINE bulk file format
 comtradeapicall.bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode='C', freqCode='A',
                                                     clCode='HS', period=None, reporterCode=None, decompress=False,
                                                     publishedDateFrom=yesterday, publishedDateTo=None)
@@ -126,6 +137,11 @@ print(mydf.head(5))
 print(len(mydf))
 # Get metadata
 mydf = comtradeapicall.getMetadata(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
+                                   reporterCode=None, showHistory=False)
+print(mydf.head(5))
+print(len(mydf))
+# Get metadata without subscription key
+mydf = comtradeapicall._getMetadata(typeCode='C', freqCode='M', clCode='HS', period='202205',
                                    reporterCode=None, showHistory=False)
 print(mydf.head(5))
 print(len(mydf))
@@ -190,8 +206,19 @@ mydf = comtradeapicall.getFinalDataAvailability(subscription_key, typeCode='C', 
                                                 period='2021', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
 print(mydf.head(5))
 print(len(mydf))
+# list data availabity from last week for reference year 2021 without subscription key
+mydf = comtradeapicall._getFinalDataAvailability(typeCode='C', freqCode='A', clCode='HS',
+                                                period='2021', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+print(mydf.head(5))
+print(len(mydf))
 # list tariffline data availabity from last week for reference period June 2022
 mydf = comtradeapicall.getTarifflineDataAvailability(subscription_key, typeCode='C', freqCode='M',
+                                                        clCode='HS',
+                                                        period='202206', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
+print(mydf.head(5))
+print(len(mydf))
+# list tariffline data availabity from last week for reference period June 2022 without subscription key
+mydf = comtradeapicall._getTarifflineDataAvailability(typeCode='C', freqCode='M',
                                                         clCode='HS',
                                                         period='202206', reporterCode=None, publishedDateFrom=lastweek, publishedDateTo=None)
 print(mydf.head(5))

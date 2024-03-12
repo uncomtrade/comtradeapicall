@@ -6,7 +6,12 @@ import urllib3
 
 
 def getMetadata(subscription_key, typeCode, freqCode, clCode, period, reporterCode, showHistory):
-    baseURL = 'https://comtradeapi.un.org/data/v1/getMetadata/' + typeCode + '/' + freqCode + '/' + clCode
+    if(subscription_key is None):
+        endpoint = "public"
+    else:  
+        endpoint = "data"
+    
+    baseURL = 'https://comtradeapi.un.org/' + endpoint + '/v1/getMetadata/' + typeCode + '/' + freqCode + '/' + clCode
     PARAMS = dict(reporterCode=reporterCode, period=period)
     PARAMS["subscription-key"] = subscription_key
     fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))  
@@ -34,6 +39,9 @@ def getMetadata(subscription_key, typeCode, freqCode, clCode, period, reporterCo
                 return df_final_merge[df_final_merge.notnull()].query('isLatestPublication==True')
     except urllib3.exceptions.RequestError as err:
         print(f'Request error: {err}')
+
+def _getMetadata(typeCode, freqCode, clCode, period, reporterCode, showHistory):
+    return getMetadata(None, typeCode, freqCode, clCode, period, reporterCode, showHistory)
 
 def listReference(category=None):
     baseURL = 'https://comtradeapi.un.org/files/v1/app/reference/ListofReferences.json'

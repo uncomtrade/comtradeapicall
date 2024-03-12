@@ -37,8 +37,14 @@ pip install comtradeapicall
     single API call)
    
 - **DataAvailability:** Model class to extract data availability
+  - _getFinalDataAvailability(**SelectionCriteria**) : return data frame containing final data
+   availability - no subscription key
   - getFinalDataAvailability(**subscription_key**, **SelectionCriteria**) : return data frame containing final data
    availability
+  - _getTarifflineDataAvailability(**SelectionCriteria**) : return data frame containing tariff
+   line
+   data
+   availability - no subscription key
   - getTarifflineDataAvailability(**subscription_key**, **SelectionCriteria**) : return data frame containing tariff
    line
    data
@@ -54,6 +60,8 @@ pip install comtradeapicall
 - **BulkDownload:** Model class to download the data files
   - bulkDownloadFinalData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download/save
    final data files to specified folder
+  - bulkDownloadFinalClassicData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download/save
+   final classic data files to specified folder 
   - bulkDownloadTarifflineData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download
   /save tariff line data files to specified folder
 
@@ -65,6 +73,7 @@ pip install comtradeapicall
   - downloadAsyncTarifflineDataRequest(**subscription_key**, **directory**, **SelectionCriteria**, **query_option**) : submit, wait and download the resulting  tariff line file
  
 - **Metadata:** Model class to extract metadata and publication notes
+  - _getMetadata(**SelectionCriteria**, **showHistory**) : return data frame with metadata and publication notes - no subscription key
   - getMetadata(**subscription_key**, **SelectionCriteria**, **showHistory**) : return data frame with metadata and publication notes
   - listReference(**[category]**) : return data frame containing list of references
   - getReference(**category**) : return data frame with the contents of specific references

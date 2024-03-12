@@ -22,15 +22,21 @@ from .BulkDownload import bulkDownloadFinalFile
 from .BulkDownload import bulkDownloadTarifflineFile
 from .BulkDownload import bulkDownloadFinalFileDateRange
 from .BulkDownload import bulkDownloadTarifflineFileDateRange
+from .BulkDownload import bulkDownloadFinalClassicFile
+from .BulkDownload import bulkDownloadFinalClassicFileDateRange
 
 # DataAvailability module
+from .DataAvailability import _getFinalDataAvailability
+from .DataAvailability import _getTarifflineDataAvailability
 from .DataAvailability import getFinalDataAvailability
 from .DataAvailability import getTarifflineDataAvailability
 from .DataAvailability import getFinalDataBulkAvailability
+from .DataAvailability import getFinalClassicDataBulkAvailability
 from .DataAvailability import getTarifflineDataBulkAvailability
 from .DataAvailability import getLiveUpdate
 
 # Metadata module
+from .Metadata import _getMetadata
 from .Metadata import getMetadata
 from .Metadata import getReference
 from .Metadata import listReference
