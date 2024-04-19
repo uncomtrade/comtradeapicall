@@ -6,21 +6,27 @@ import json
 import urllib3
 import shutil
 
+
 def submitAsyncDataRequest(subscription_key, endPoint, typeCode, freqCode, clCode, period, reporterCode, cmdCode,
-                   flowCode, partnerCode, partner2Code, customsCode, motCode, aggregateBy, breakdownMode):
+                           flowCode, partnerCode, partner2Code, customsCode, motCode, aggregateBy, breakdownMode, proxy_url=None):
     if endPoint == 'TARIFFLINE':
-        baseURL = 'https://comtradeapi.un.org/async/v1/getTariffline/' + typeCode + '/' + freqCode + '/' + clCode
+        baseURL = 'https://comtradeapi.un.org/async/v1/getTariffline/' + \
+            typeCode + '/' + freqCode + '/' + clCode
     else:
-        baseURL = 'https://comtradeapi.un.org/async/v1/get/' + typeCode + '/' + freqCode + '/' + clCode
+        baseURL = 'https://comtradeapi.un.org/async/v1/get/' + \
+            typeCode + '/' + freqCode + '/' + clCode
 
     PARAMS = dict(reportercode=reporterCode, flowCode=flowCode,
                   period=period, cmdCode=cmdCode, partnerCode=partnerCode, partner2Code=partner2Code,
                   motCode=motCode, customsCode=customsCode, aggregateBy=aggregateBy, breakdownMode=breakdownMode)
     PARAMS["subscription-key"] = subscription_key
-    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))  
-    http = urllib3.PoolManager()
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))
+    if proxy_url:
+        http = urllib3.ProxyManager(proxy_url=proxy_url)
+    else:
+        http = urllib3.PoolManager()
     try:
-        resp = http.request("GET",baseURL, fields = fields, timeout=120)
+        resp = http.request("GET", baseURL, fields=fields, timeout=120)
         if resp.status != 202:
             print(resp.data.decode('utf-8'))
         else:
@@ -30,30 +36,36 @@ def submitAsyncDataRequest(subscription_key, endPoint, typeCode, freqCode, clCod
     except urllib3.exceptions.RequestError as err:
         print(f'Request error: {err}')
 
+
 def submitAsyncFinalDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
-                              partnerCode,
-                              partner2Code, customsCode, motCode,  aggregateBy=None,
-                              breakdownMode=None):
+                                partnerCode,
+                                partner2Code, customsCode, motCode,  aggregateBy=None,
+                                breakdownMode=None, proxy_url=None):
     return submitAsyncDataRequest(subscription_key, 'FINAL', typeCode, freqCode, clCode, period, reporterCode,
                                   cmdCode, flowCode,
                                   partnerCode,
-                                  partner2Code, customsCode, motCode, aggregateBy, breakdownMode)
+                                  partner2Code, customsCode, motCode, aggregateBy, breakdownMode, proxy_url=proxy_url)
+
 
 def submitAsyncTarifflineDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode,
-                                   flowCode,partnerCode, partner2Code, customsCode, motCode):
+                                     flowCode, partnerCode, partner2Code, customsCode, motCode, proxy_url=None):
     return submitAsyncDataRequest(subscription_key, 'TARIFFLINE', typeCode, freqCode, clCode, period, reporterCode,
                                   cmdCode, flowCode,
                                   partnerCode,
-                                  partner2Code, customsCode, motCode, None, None)
+                                  partner2Code, customsCode, motCode, aggregateBy=None, breakdownMode=None, proxy_url=proxy_url)
 
-def checkAsyncDataRequest(subscription_key, batchId=None):
+
+def checkAsyncDataRequest(subscription_key, batchId=None, proxy_url=None):
     baseURL = 'https://comtradeapi.un.org/async/v1/getDA/'
     PARAMS = dict(batchId=batchId)
     PARAMS["subscription-key"] = subscription_key
-    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))  
-    http = urllib3.PoolManager()
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))
+    if proxy_url:
+        http = urllib3.ProxyManager(proxy_url=proxy_url)
+    else:
+        http = urllib3.PoolManager()
     try:
-        resp = http.request("GET",baseURL, fields = fields, timeout=120)
+        resp = http.request("GET", baseURL, fields=fields, timeout=120)
         if resp.status != 200:
             print(resp.data.decode('utf-8'))
         else:
@@ -63,11 +75,12 @@ def checkAsyncDataRequest(subscription_key, batchId=None):
     except urllib3.exceptions.RequestError as err:
         print(f'Request error: {err}')
 
+
 def downloadAsyncFinalDataRequest(subscription_key, directory, typeCode, freqCode, clCode, period,
                                   reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode,
-                                  aggregateBy=None, breakdownMode=None):
+                                  aggregateBy=None, breakdownMode=None, proxy_url=None):
     myJson = submitAsyncFinalDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode,
-                                  cmdCode, flowCode,partnerCode,partner2Code, customsCode, motCode, aggregateBy, breakdownMode)
+                                         cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, aggregateBy, breakdownMode, proxy_url=proxy_url)
     batchId = myJson['requestId']
     print("Processing and downloading the result. BatchId: ", batchId)
     status = ''
@@ -83,8 +96,11 @@ def downloadAsyncFinalDataRequest(subscription_key, directory, typeCode, freqCod
         a = urlparse(url)
         fileName = os.path.basename(a.path)
         download_path = os.path.join(directory, fileName)
-        #download file
-        httpFILE = urllib3.PoolManager()
+        # download file
+        if proxy_url:
+            httpFILE = urllib3.ProxyManager(proxy_url=proxy_url)
+        else:
+            httpFILE = urllib3.PoolManager()
         with open(download_path, 'wb') as out:
             r = httpFILE.request('GET', url, preload_content=False)
             shutil.copyfileobj(r, out)
@@ -93,10 +109,11 @@ def downloadAsyncFinalDataRequest(subscription_key, directory, typeCode, freqCod
     else:
         print('Error occurred when processing batchId: ', batchId)
 
+
 def downloadAsyncTarifflineDataRequest(subscription_key, directory, typeCode, freqCode, clCode, period,
-                                  reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode):
+                                       reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, proxy_url=None):
     myJson = submitAsyncTarifflineDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode,
-                                  cmdCode, flowCode,partnerCode,partner2Code, customsCode, motCode)
+                                              cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, proxy_url=proxy_url)
     batchId = myJson['requestId']
     # check status -- looping
     print("Processing and downloading the result. BatchId: ", batchId)
@@ -113,8 +130,11 @@ def downloadAsyncTarifflineDataRequest(subscription_key, directory, typeCode, fr
         a = urlparse(url)
         fileName = os.path.basename(a.path)
         download_path = os.path.join(directory, fileName)
-        #download file
-        httpFILE = urllib3.PoolManager()
+        # download file
+        if proxy_url:
+            httpFILE = urllib3.ProxyManager(proxy_url=proxy_url)
+        else:
+            httpFILE = urllib3.PoolManager()
         with open(download_path, 'wb') as out:
             r = httpFILE.request('GET', url, preload_content=False)
             shutil.copyfileobj(r, out)

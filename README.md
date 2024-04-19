@@ -5,7 +5,7 @@ This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.
 ## Details
 [UN Comtrade](https://comtrade.un.org) provides free and premium APIs to extract and download data/metadata, however
  it is quite a learning curve to understand all of APIs end-points and parameters. This package simplifies it by
-  calling a single python function with the appropriate parameters. Learn more about UN Comtrade at the [UN Comtrade wiki](https://unstats.un.org/wiki/display/comtrade/UN+Comtrade).
+  calling a single python function with the appropriate parameters. Learn more about UN Comtrade at the [UN Comtrade Docs](https://uncomtrade.org/docs).
 
 This project is intended to be deployed at [The Python Package Index](https://pypi.org/project/comtradeapicall/), therefore the structure of
  folders follows the suggested layout from [Packaging Python Project](https://packaging.python.org/en/latest/tutorials/packaging-projects/). The main scripts are located at **/src/comtradeapicall/**. And the folder **tests** contains the example scripts how to install and use the package.
@@ -84,7 +84,7 @@ pip install comtradeapicall
 - **AIS:** Model class to extract experimental trade data generated from AIS (ships tracking movement). See [Cerdeiro, Komaromi, Liu and Saeed (2020)](https://www.imf.org/en/Publications/WP/Issues/2020/05/14/World-Seaborne-Trade-in-Real-Time-A-Proof-of-Concept-for-Building-AIS-based-Nowcasts-from-49393). *When consuming the data, users should understand its limitation.*  
   - getAIS(**subscription_key**, **AISSelectionCriteria**, **[vesselTypeCode]**) : return data frame with AIS trade data
 
-See differences between final and tariff line data at the [Wiki](https://unstats.un.org/wiki/display/comtrade/New+Comtrade+FAQ+for+First+Time+Users#NewComtradeFAQforFirstTimeUsers-Whatisthetarifflinedata?)
+See differences between final and tariff line data at the [Docs](https://uncomtrade.org/docs/what-is-tariffline-data/)
  
 ## Selection Criteria
 - typeCode(str) : Product type. Goods (C) or Services (S)
@@ -114,6 +114,10 @@ See differences between final and tariff line data at the [Wiki](https://unstats
 - countryareaCode(str) : The country or geographic area to which the measured statistical phenomenon relates. Use *getReference('ais:countriesareas')* for the complete list.
 - vesselTypeCode(str) : The high level categorization of vessels transporting the goods. Use *getReference('ais:vesseltypes')* for the complete list.
 - flowCode(str) : Trade flow (exports, imports)
+
+## Proxy Server
+- proxy_url(str) : All functions that call the API support the proxy server. Use the parameter proxy_url.
+
  
 ## Examples of python usage
 - Extract Australia imports of commodity code 91 in classic mode in May 2022
