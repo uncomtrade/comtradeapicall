@@ -59,11 +59,11 @@ def getPreviewData(subscription_key, tradeDataType, typeCode, freqCode, clCode, 
             print(f'Request error: {err}')
 
 
-def previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+def previewFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                      partnerCode,
                      partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
                      aggregateBy=None, breakdownMode=None, countOnly=None, includeDesc=None, proxy_url=None):
-    return getPreviewData(None, 'FINAL', typeCode, freqCode, clCode, period, reporterCode,
+    return getPreviewData(subscription_key, 'FINAL', typeCode, freqCode, clCode, period, reporterCode,
                           cmdCode, flowCode,
                           partnerCode,
                           partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
@@ -71,14 +71,14 @@ def previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, 
                           countOnly, includeDesc, proxy_url)
 
 
-def _previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+def _previewFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                       partnerCode,
                       partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
                       aggregateBy=None, breakdownMode=None, countOnly=None, includeDesc=None, proxy_url=None):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
         try:
-            staging_df = previewFinalData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
+            staging_df = previewFinalData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
                                           partnerCode,
                                           partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
                                           breakdownMode,
@@ -86,7 +86,7 @@ def _previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode,
         except:  # retry once more after 10 secs  # noqa: E722
             print('Repeating API call for period: ' + single_period)
             t.sleep(10)
-            staging_df = previewFinalData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
+            staging_df = previewFinalData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
                                           partnerCode,
                                           partner2Code, customsCode, motCode, maxRecords, format_output, aggregateBy,
                                           breakdownMode,
@@ -95,11 +95,11 @@ def _previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode,
     return main_df
 
 
-def previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+def previewTarifflineData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                           partnerCode,
                           partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
                           countOnly=None, includeDesc=None, proxy_url=None):
-    return getPreviewData(None, 'TARIFFLINE', typeCode, freqCode, clCode, period, reporterCode,
+    return getPreviewData(subscription_key, 'TARIFFLINE', typeCode, freqCode, clCode, period, reporterCode,
                           cmdCode, flowCode,
                           partnerCode,
                           partner2Code, customsCode, motCode, maxRecords, format_output, None,
@@ -107,14 +107,14 @@ def previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdC
                           countOnly, includeDesc, proxy_url)
 
 
-def _previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+def _previewTarifflineData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                            partnerCode,
                            partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
                            countOnly=None, includeDesc=None, proxy_url=None):
     main_df = pandas.DataFrame()
     for single_period in list(period.split(",")):
         try:
-            staging_df = previewTarifflineData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode,
+            staging_df = previewTarifflineData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode, cmdCode,
                                                flowCode,
                                                partnerCode,
                                                partner2Code, customsCode, motCode, maxRecords, format_output,
@@ -122,7 +122,7 @@ def _previewTarifflineData(typeCode, freqCode, clCode, period, reporterCode, cmd
         except:  # retry once more after 10 secs  # noqa: E722
             print('Repeating API call for period: ' + single_period)
             t.sleep(10)
-            staging_df = previewTarifflineData(typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
+            staging_df = previewTarifflineData(subscription_key, typeCode, freqCode, clCode, single_period, reporterCode, cmdCode, flowCode,
                                                partnerCode,
                                                partner2Code, customsCode, motCode, maxRecords, format_output,
                                                countOnly, includeDesc)

@@ -122,7 +122,7 @@ See differences between final and tariff line data at the [Docs](https://uncomtr
 ## Examples of python usage
 - Extract Australia imports of commodity code 91 in classic mode in May 2022
 ``` python
-mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202205',
+mydf = comtradeapicall.previewFinalData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
                                         reporterCode='36', cmdCode='91', flowCode='M', partnerCode=None,
                                         partner2Code=None,
                                         customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
@@ -130,7 +130,7 @@ mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS',
 ```    
 - Extract Australia tariff line imports of commodity code started with 90 and 91 from Indonesia in May 2022
 ``` python
-mydf = comtradeapicall.previewTarifflineData(typeCode='C', freqCode='M', clCode='HS', period='202205',
+mydf = comtradeapicall.previewTarifflineData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
                                              reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=36,
                                              partner2Code=None,
                                              customsCode=None, motCode=None, maxRecords=500, format_output='JSON',

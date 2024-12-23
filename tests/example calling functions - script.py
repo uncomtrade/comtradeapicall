@@ -19,21 +19,21 @@ lastweek = today - timedelta(days=7)
 
 # Call preview final data API to a data frame, max to 500 records, no subscription key required
 # This example: Australia imports of commodity code 91 in classic mode in May 2022
-mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202205',
+mydf = comtradeapicall.previewFinalData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
                                         reporterCode='36', cmdCode='91', flowCode='M', partnerCode=None,
                                         partner2Code=None,
                                         customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
                                         aggregateBy=None, breakdownMode='classic', countOnly=None, includeDesc=True)
 print(mydf.head(5))
 # The same preview final call but using proxy_url
-mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202205',
+mydf = comtradeapicall.previewFinalData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
                                         reporterCode='36', cmdCode='91', flowCode='M', partnerCode=None,
                                         partner2Code=None,
                                         customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
                                         aggregateBy=None, breakdownMode='classic', countOnly=None, includeDesc=True, proxy_url=proxy_url)
 print(mydf.head(5))
 # This function will split the query into multiple API calls for optimization (and avoiding timeout)
-mydf = comtradeapicall._previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202105,202205',
+mydf = comtradeapicall._previewFinalData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202105,202205',
                                          reporterCode='36', cmdCode='91', flowCode='M', partnerCode=None,
                                          partner2Code=None,
                                          customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
@@ -42,14 +42,14 @@ print(mydf.head(5))
 
 # Call preview tariffline data API to a data frame, max to 500 records, no subscription key required
 # This example: Australia imports of commodity code started with 90 and 91 from Indonesia in May 2022
-mydf = comtradeapicall.previewTarifflineData(typeCode='C', freqCode='M', clCode='HS', period='202205',
+mydf = comtradeapicall.previewTarifflineData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
                                              reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=360,
                                              partner2Code=None,
                                              customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
                                              countOnly=None, includeDesc=True)
 print(mydf.head(5))
 # This function will split the query into multiple API calls for optimization (and avoiding timeout)
-mydf = comtradeapicall._previewTarifflineData(typeCode='C', freqCode='M', clCode='HS', period='202105,202205',
+mydf = comtradeapicall._previewTarifflineData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202105,202205',
                                               reporterCode='36', cmdCode='91,90', flowCode='M', partnerCode=360,
                                               partner2Code=None,
                                               customsCode=None, motCode=None, maxRecords=500, format_output='JSON',
@@ -204,7 +204,7 @@ print(len(mydf))
 country_code = comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA')
 print(country_code)
 # use the convert function country_code in preview call
-mydf = comtradeapicall.previewFinalData(typeCode='C', freqCode='M', clCode='HS', period='202205',
+mydf = comtradeapicall.previewFinalData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
                                         reporterCode=comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA'), cmdCode='91', flowCode='M', partnerCode=None,
                                         partner2Code=None, customsCode=None, motCode=None)
 print(mydf.head(5))
