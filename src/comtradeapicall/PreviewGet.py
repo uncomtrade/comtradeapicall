@@ -71,6 +71,28 @@ def previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, 
                           countOnly, includeDesc, proxy_url)
 
 
+def previewCountFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+                          partnerCode,
+                          partner2Code, customsCode, motCode, aggregateBy=None, breakdownMode=None, proxy_url=None):
+    return getPreviewData(None, 'FINAL', typeCode, freqCode, clCode, period, reporterCode,
+                          cmdCode, flowCode,
+                          partnerCode,
+                          partner2Code, customsCode, motCode, maxRecords=None, format_output=None, aggregateBy=aggregateBy,
+                          breakdownMode=breakdownMode,
+                          countOnly=True, includeDesc=None, proxy_url=proxy_url)
+
+
+def getCountFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+                      partnerCode,
+                      partner2Code, customsCode, motCode, aggregateBy=None, breakdownMode=None, proxy_url=None):
+    return getFinalData(subscription_key, typeCode, freqCode, clCode, period, reporterCode,
+                        cmdCode, flowCode,
+                        partnerCode,
+                        partner2Code, customsCode, motCode, maxRecords=None, format_output=None, aggregateBy=aggregateBy,
+                        breakdownMode=breakdownMode,
+                        countOnly=True, includeDesc=None, proxy_url=proxy_url)
+
+
 def _previewFinalData(typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
                       partnerCode,
                       partner2Code, customsCode, motCode, maxRecords=None, format_output=None,
@@ -199,3 +221,75 @@ def _getTarifflineData(subscription_key, typeCode, freqCode, clCode, period, rep
                                            countOnly, includeDesc, proxy_url)
         main_df = pandas.concat([main_df, staging_df])
     return main_df
+
+
+def getTradeBalance(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode,
+                    partnerCode,
+                    partner2Code=None, customsCode=None, motCode=None, maxRecords=None, format_output='JSON',
+                    breakdownMode='classic',
+                    includeDesc=None, proxy_url=None):
+
+    baseURL = 'https://comtradeapi.un.org/tools/v1/getTradeBalance/' + \
+        typeCode + '/' + freqCode + '/' + clCode
+
+    PARAMS = dict(reportercode=reporterCode, period=period, cmdCode=cmdCode, partnerCode=partnerCode, partner2Code=partner2Code,
+                  motCode=motCode, customsCode=customsCode,
+                  maxRecords=maxRecords, format=format_output,  breakdownMode=breakdownMode,
+                  includeDesc=includeDesc)
+    PARAMS["subscription-key"] = subscription_key
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))
+    if proxy_url:
+        http = urllib3.ProxyManager(proxy_url=proxy_url)
+    else:
+        http = urllib3.PoolManager()
+    if format_output is None:
+        format_output = 'JSON'
+    if format_output != 'JSON':
+        print("Only JSON output is supported with this function")
+    else:
+        try:
+            resp = http.request("GET", baseURL, fields=fields, timeout=120)
+            if resp.status != 200:
+                print(resp.data.decode('utf-8'))
+            else:
+                jsonResult = json.loads(resp.data)
+                # Results contain the required data
+                df = json_normalize(jsonResult['data'])
+                return df
+        except urllib3.exceptions.RequestError as err:
+            print(f'Request error: {err}')
+
+
+def getBilateralData(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
+                     partnerCode,
+                     maxRecords=None, format_output='JSON',
+                     includeDesc=None, proxy_url=None):
+
+    baseURL = 'https://comtradeapi.un.org/tools/v1/getBilateralData/' + \
+        typeCode + '/' + freqCode + '/' + clCode
+
+    PARAMS = dict(reportercode=reporterCode, period=period, cmdCode=cmdCode, flowCode=flowCode, partnerCode=partnerCode,
+                  maxRecords=maxRecords, format=format_output,
+                  includeDesc=includeDesc)
+    PARAMS["subscription-key"] = subscription_key
+    fields = dict(filter(lambda item: item[1] is not None, PARAMS.items()))
+    if proxy_url:
+        http = urllib3.ProxyManager(proxy_url=proxy_url)
+    else:
+        http = urllib3.PoolManager()
+    if format_output is None:
+        format_output = 'JSON'
+    if format_output != 'JSON':
+        print("Only JSON output is supported with this function")
+    else:
+        try:
+            resp = http.request("GET", baseURL, fields=fields, timeout=120)
+            if resp.status != 200:
+                print(resp.data.decode('utf-8'))
+            else:
+                jsonResult = json.loads(resp.data)
+                # Results contain the required data
+                df = json_normalize(jsonResult['data'])
+                return df
+        except urllib3.exceptions.RequestError as err:
+            print(f'Request error: {err}')

@@ -2,13 +2,18 @@
 This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.un.org) to extract and download data
  (and much more). 
 
+ # Revision
+ - 1.2.2: Removed AIS function as it is no longer available; Add functions getTradeBalance and getBilateralData
+
 ## Details
 [UN Comtrade](https://comtrade.un.org) provides free and premium APIs to extract and download data/metadata, however
  it is quite a learning curve to understand all of APIs end-points and parameters. This package simplifies it by
   calling a single python function with the appropriate parameters. Learn more about UN Comtrade at the [UN Comtrade Docs](https://uncomtrade.org/docs).
 
 This project is intended to be deployed at [The Python Package Index](https://pypi.org/project/comtradeapicall/), therefore the structure of
- folders follows the suggested layout from [Packaging Python Project](https://packaging.python.org/en/latest/tutorials/packaging-projects/). The main scripts are located at **/src/comtradeapicall/**. And the folder **tests** contains the example scripts how to install and use the package.
+ folders follows the suggested layout from [Packaging Python Project](https://packaging.python.org/en/latest/tutorials/packaging-projects/). The main scripts are located at **/src/comtradeapicall/**. And the folder **tests** and **examples** contains the example scripts how to install and use the package.
+
+ This package is provided ‘as is’ without any warranties or guarantees of any kind, whether express or implied, including but not limited to implied warranties of merchantability or fitness for a particular purpose. No support or maintenance is promised or provided
  
  ## Prerequisites
 This package assumes using Python 3.7 and the expected package dependencies are listed in the "requirements.txt" file
@@ -35,7 +40,12 @@ pip install comtradeapicall
   - Alternative functions of _previewFinalData, _previewTarifflineData, _getFinalData, _getTarifflineData returns the
    same data frame, respectively,  with query optimization by calling multiple APIs based on the periods (instead of
     single API call)
-   
+  - previewCountFinalData(**SelectionCriteria**, **query_option**) : return data frame containing actual count of trade data (no subscription key, but limited to 500 records)
+  - getCountFinalData(**subscription_key**,**SelectionCriteria**, **query_option**) : return data frame containing actual count of trade data (with subscription key)    
+  - getTradeBalance(**subscription_key**,**SelectionCriteria**, **query_option**) : return data frame with trade balance indicator
+  - getBilateralData(**subscription_key**,**SelectionCriteria**, **query_option**) : return data frame by comparing reported data with their mirror (data reported by the trading partners)
+
+  
 - **DataAvailability:** Model class to extract data availability
   - _getFinalDataAvailability(**SelectionCriteria**) : return data frame containing final data
    availability - no subscription key
@@ -81,9 +91,6 @@ pip install comtradeapicall
 - **SUV:** Model class to extract data on Standard Unit Values (SUV) and their ranges
   - getSUV(**subscription_key**, **SelectionCriteria**, **[qtyUnitCode]**) : return data frame with SUV data
 
-- **AIS:** Model class to extract experimental trade data generated from AIS (ships tracking movement). See [Cerdeiro, Komaromi, Liu and Saeed (2020)](https://www.imf.org/en/Publications/WP/Issues/2020/05/14/World-Seaborne-Trade-in-Real-Time-A-Proof-of-Concept-for-Building-AIS-based-Nowcasts-from-49393). *When consuming the data, users should understand its limitation.*  
-  - getAIS(**subscription_key**, **AISSelectionCriteria**, **[vesselTypeCode]**) : return data frame with AIS trade data
-
 See differences between final and tariff line data at the [Docs](https://uncomtrade.org/docs/what-is-tariffline-data/)
  
 ## Selection Criteria
@@ -106,14 +113,6 @@ See differences between final and tariff line data at the [Docs](https://uncomtr
 - breakdownMode(str) : Option to select the classic (trade by partner/product) or plus (extended breakdown) mode
 - countOnly(bool) : Return the actual number of records if set to True 
 - includeDesc(bool) : Option to include the description or not
-
-## AIS Selection Criteria
-- typeCode(str) : Product type. Only Goods (C)
-- freqCode(str) : The time interval at which observations occur. Daily (D)
-- datefrom(str) and dateto(str) :  Date(s) of observation - ASCII format
-- countryareaCode(str) : The country or geographic area to which the measured statistical phenomenon relates. Use *getReference('ais:countriesareas')* for the complete list.
-- vesselTypeCode(str) : The high level categorization of vessels transporting the goods. Use *getReference('ais:vesseltypes')* for the complete list.
-- flowCode(str) : Trade flow (exports, imports)
 
 ## Proxy Server
 - proxy_url(str) : All functions that call the API support the proxy server. Use the parameter proxy_url.
@@ -282,11 +281,17 @@ country_code = comtradeapicall.convertCountryIso3ToCode('USA,FRA,CHE,ITA')
 ``` python
 mydf = comtradeapicall.getSUV(subscription_key, period='2022', cmdCode='010391', flowCode=None, qtyUnitCode=8)
 ``` 
-- Get number of port calls and trade volume estimates derrived from AIS data for Australia between 1 and 8 February 2023 with vessel types bulk and container.
+- Get data in trade balance layout (exports and imports next to each other)
 ``` python
-mydf = comtradeapicall.getAIS(subscription_key, countryareaCode=36, vesselTypeCode='1,2', dateFrom='2023-02-01', dateTo='2023-02-08')
+mydf = comtradeapicall.getTradeBalance(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',reporterCode='36', cmdCode='TOTAL', partnerCode=None)
 ``` 
-- Tests folder contain more examples including calculation of unit value
+- Get and compare data in bilateral layout (reported data is complemented by mirror partner data)
+``` python
+mydf = comtradeapicall.getBilateralData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205', reporterCode='36', cmdCode='TOTAL', flowCode='X', partnerCode=None)
+``` 
+## Script Examples
+- Examples folder contains more use cases including calculation of unit value, tracking top traded products
+- Tests folder contains examples of using the lib
 
 ## Downloaded file name convention
 The naming convention follows the following : "COMTRADE-\<DATA>-\<TYPE>\<FREQ>\<COUNTRY CODE>\<YEAR\[

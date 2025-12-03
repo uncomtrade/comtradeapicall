@@ -1,10 +1,10 @@
 [project]
-name = "comtradeapicall"
-version = "1.2.1"
+Name = "comtradeapicall"
+Version = "1.2.2"
+description = "A package to call UN Comtrade APIs"
 authors = [
   { name="untradestats", email="untradestats@gmail.com" },
 ]
-description = "A package to call UN Comtrade APIs"
 readme = "README.md"
 requires-python = ">=3.7"
 classifiers = [

@@ -7,7 +7,8 @@ from datetime import date
 import comtradeapicall
 
 # set some variables
-subscription_key = '<YOUR KEY>' # comtrade api subscription key (from comtradedeveloper.un.org), some preview and metadata/reference API calls do not require key
+# comtrade api subscription key (from comtradedeveloper.un.org), some preview and metadata/reference API calls do not require key
+subscription_key = '<YOUR KEY>'
 directory = '<OUTPUT DIR>'  # output directory for downloaded files
 proxy_url = '<PROXY URL>'  # optional if you need a proxy server
 
@@ -247,13 +248,19 @@ mydf = comtradeapicall.getSUV(subscription_key,
                               period='2022', cmdCode='010391', flowCode=None, qtyUnitCode=8)
 print(mydf.head(5))
 print(len(mydf))
-# Get number of port calls and trade volume estimates derrived from AIS data for Australia between 1 and 8 February 2023 with vessel types bulk and container.
-mydf = comtradeapicall.getReference('ais:dataitems')
+# Get data in trade balance layout (exports and imports next to each other)
+mydf = comtradeapicall.getTradeBalance(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
+                                       reporterCode='36', cmdCode='TOTAL', partnerCode=None)
 print(mydf.head(5))
-mydf = comtradeapicall.getAIS(subscription_key, countryareaCode=36,
-                              vesselTypeCode='1,2', dateFrom='2023-02-01', dateTo='2023-02-08')
+# Get data in bilateral layout (basic data is complemented by mirror partner data)
+mydf = comtradeapicall.getBilateralData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205',
+                                        reporterCode='36', cmdCode='TOTAL', flowCode='X', partnerCode=None)
 print(mydf.head(5))
-# The same AIS but using proxy
-mydf = comtradeapicall.getAIS(subscription_key, countryareaCode=36,
-                              vesselTypeCode='1,2', dateFrom='2023-02-01', dateTo='2023-02-08', proxy_url=proxy_url)
+# Count of numbers of records (without key - single period)
+mydf = comtradeapicall.previewCountFinalData(typeCode='C', freqCode='M', clCode='HS', period='202201', reporterCode='', cmdCode='9*', flowCode='M', partnerCode='0,826',
+                                             partner2Code=None, customsCode=None, motCode=None, aggregateBy=None, breakdownMode='classic')
+print(mydf.head(5))
+# Count of numbers of records (using subscription - multiple periods)
+mydf = comtradeapicall.getCountFinalData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202201,202202', reporterCode='', cmdCode='9*', flowCode='M', partnerCode='0,826',
+                                         partner2Code=None, customsCode=None, motCode=None, aggregateBy=None, breakdownMode='classic')
 print(mydf.head(5))
