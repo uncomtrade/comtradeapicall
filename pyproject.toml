@@ -1,6 +1,6 @@
 [project]
-Name = "comtradeapicall"
-Version = "1.2.2"
+name = "comtradeapicall"
+version = "1.2.3"
 description = "A package to call UN Comtrade APIs"
 authors = [
   { name="untradestats", email="untradestats@gmail.com" },

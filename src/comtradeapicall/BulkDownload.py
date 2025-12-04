@@ -4,6 +4,7 @@ import gzip
 from pandas import json_normalize
 import urllib3
 import json
+from datetime import datetime
 
 
 def bulkDownloadFile(subscription_key, directory, tradeDataType, typeCode, freqCode, clCode, period, reporterCode,
@@ -106,16 +107,106 @@ def bulkDownloadTarifflineFile(subscription_key, directory, typeCode, freqCode, 
                      reporterCode, decompress, publishedDateFrom, publishedDateTo)
 
 
-def bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None):
+def bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
     bulkDownloadFile(subscription_key, directory, 'FINAL', typeCode, freqCode, clCode, period,
-                     reporterCode, decompress, publishedDateFrom, publishedDateTo)
+                     reporterCode, decompress, publishedDateFrom, publishedDateTo, proxy_url)
 
 
-def bulkDownloadFinalClassicFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None):
+def bulkDownloadFinalClassicFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
     bulkDownloadFile(subscription_key, directory, 'FINALCLASSIC', typeCode, freqCode, clCode, period,
-                     reporterCode, decompress, publishedDateFrom, publishedDateTo)
+                     reporterCode, decompress, publishedDateFrom, publishedDateTo, proxy_url)
 
 
-def bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None):
+def bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode, freqCode, clCode, period=None, reporterCode=None, decompress=False, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
     bulkDownloadFile(subscription_key, directory, 'TARIFFLINE', typeCode, freqCode, clCode, period,
-                     reporterCode, decompress, publishedDateFrom, publishedDateTo)
+                     reporterCode, decompress, publishedDateFrom, publishedDateTo, proxy_url)
+
+
+def bulkDownloadAndCombineFileDateRange(subscription_key, directory, tradeDataType, typeCode, freqCode, clCode, period, reporterCode, decompress=False, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+
+    if tradeDataType == 'TARIFFLINE':
+        bulkDownloadTarifflineFileDateRange(subscription_key, directory, typeCode=typeCode, freqCode=freqCode, clCode=clCode, period=period,
+                                            reporterCode=reporterCode, decompress=False, publishedDateFrom=publishedDateFrom, publishedDateTo=publishedDateTo, proxy_url=proxy_url)
+    elif tradeDataType == "FINALCLASSIC":
+        bulkDownloadFinalClassicFileDateRange(subscription_key, directory, typeCode=typeCode, freqCode=freqCode, clCode=clCode, period=period,
+                                              reporterCode=reporterCode, decompress=False, publishedDateFrom=publishedDateFrom, publishedDateTo=publishedDateTo, proxy_url=proxy_url)
+    else:
+        bulkDownloadFinalFileDateRange(subscription_key, directory, typeCode=typeCode, freqCode=freqCode, clCode=clCode, period=period,
+                                       reporterCode=reporterCode, decompress=False, publishedDateFrom=publishedDateFrom, publishedDateTo=publishedDateTo, proxy_url=proxy_url)
+
+    # Generate timestamp for filenames
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")  # e.g., 20251203_114500
+
+    output_file_name = 'COMBINED-COMTRADE-' + tradeDataType + \
+        "-" + typeCode + freqCode+clCode + "-" + \
+        (str(reporterCode).zfill(3) if reporterCode is not None else "ALL") + "-" +\
+        (str(period) if period is not None else "ALL")
+
+    input_folder = directory
+    txt_output = os.path.join(
+        input_folder, output_file_name + f'-[{timestamp}].txt')
+    gz_output = os.path.join(
+        input_folder, output_file_name + f'-[{timestamp}].gz')
+
+    # Get all .gz files in the folder that start with "COMTRADE-"
+    gz_files = sorted([
+        os.path.join(input_folder, f)
+        for f in os.listdir(input_folder)
+        if f.startswith('COMTRADE-') and f.endswith('.gz')
+    ])
+
+    # ✅ Pre-check: Ensure files exist before doing any work
+    if not gz_files:
+        print("❌ No matching .gz files found. Nothing to process.")
+    else:
+        try:
+            # Step 1: Write combined content to a .txt file
+            with open(txt_output, 'w', encoding='utf-8') as txt_out:
+                header_written = False
+                for file in gz_files:
+                    print(f"Processing: {file}")
+                    with gzip.open(file, 'rt', encoding='utf-8') as in_f:
+                        for i, line in enumerate(in_f):
+                            if i == 0:
+                                if not header_written:
+                                    # Write header from first file
+                                    txt_out.write(line)
+                                    header_written = True
+                                # Skip header for subsequent files
+                            else:
+                                txt_out.write(line)
+
+            # Step 2: Compress the combined .txt file into .gz
+            if (not decompress):
+                with open(txt_output, 'rb') as f_in:
+                    with gzip.GzipFile(filename=txt_output, mode='wb', fileobj=open(gz_output, 'wb')) as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+
+            # Step 3: Delete original .gz files
+            for file in gz_files:
+                os.remove(file)
+                print(f"Deleted: {file}")
+            if (not decompress):
+                os.remove(txt_output)
+                print(f"Deleted: {file}")
+
+            print(
+                f"✅ Combined {len(gz_files)} files into {gz_output}.")
+
+        except Exception as e:
+            print(f"❌ An error occurred: {e}")
+
+
+def bulkDownloadAndCombineTarifflineFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress=False, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    bulkDownloadAndCombineFileDateRange(subscription_key, directory, 'TARIFFLINE', typeCode, freqCode,
+                                        clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo, proxy_url)
+
+
+def bulkDownloadAndCombineFinalFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress=False, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    bulkDownloadAndCombineFileDateRange(subscription_key, directory, 'FINAL', typeCode, freqCode,
+                                        clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo, proxy_url)
+
+
+def bulkDownloadAndCombineFinalClassicFile(subscription_key, directory, typeCode, freqCode, clCode, period, reporterCode, decompress=False, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    bulkDownloadAndCombineFileDateRange(subscription_key, directory, 'FINALCLASSIC', typeCode, freqCode,
+                                        clCode, period, reporterCode, decompress, publishedDateFrom, publishedDateTo, proxy_url)

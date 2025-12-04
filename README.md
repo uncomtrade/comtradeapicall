@@ -3,6 +3,7 @@ This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.
  (and much more). 
 
  # Revision
+ - 1.2.3: Add functions to download and combine bulk files (bulkDownloadAndCombineFinalFile)
  - 1.2.2: Removed AIS function as it is no longer available; Add functions getTradeBalance and getBilateralData
 
 ## Details
@@ -68,12 +69,18 @@ pip install comtradeapicall
   - getLiveUpdate(**subscription_key**) : return data frame recent data releases
   
 - **BulkDownload:** Model class to download the data files
-  - bulkDownloadFinalData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download/save
+  - bulkDownloadFinalFile(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download/save
    final data files to specified folder
-  - bulkDownloadFinalClassicData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download/save
+  - bulkDownloadFinalClassicFile(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download/save
    final classic data files to specified folder 
-  - bulkDownloadTarifflineData(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download
+  - bulkDownloadTarifflineFile(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download
   /save tariff line data files to specified folder
+  - bulkDownloadAndCombineTarifflineFile(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download
+  /save and combine tariff line data files (into a single file) to specified folder
+  - bulkDownloadAndCombineFinalFile(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download
+  /save and combine final data files (into a single file) to specified folder  
+  - bulkDownloadAndCombineFinalClassicFile(**subscription_key**, **directory**,  **SelectionCriteria**, **decompress**, **[publishedDateFrom]**, **[publishedDateTo]**) : download
+  /save and combine final classic data files (into a single file) to specified folder 
 
 - **Async:** Model class to extract the data asynchronously (limited to 2.5M records) with email notification
   - submitAsyncFinalDataRequest(**subscription_key**, **SelectionCriteria**, **query_option**) : submit a final data job

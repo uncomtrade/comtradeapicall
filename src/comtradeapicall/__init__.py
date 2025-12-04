@@ -28,6 +28,9 @@ from .BulkDownload import bulkDownloadFinalFileDateRange
 from .BulkDownload import bulkDownloadTarifflineFileDateRange
 from .BulkDownload import bulkDownloadFinalClassicFile
 from .BulkDownload import bulkDownloadFinalClassicFileDateRange
+from .BulkDownload import bulkDownloadAndCombineTarifflineFile
+from .BulkDownload import bulkDownloadAndCombineFinalFile
+from .BulkDownload import bulkDownloadAndCombineFinalClassicFile
 
 # DataAvailability module
 from .DataAvailability import _getFinalDataAvailability

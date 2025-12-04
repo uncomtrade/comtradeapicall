@@ -264,3 +264,12 @@ print(mydf.head(5))
 mydf = comtradeapicall.getCountFinalData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202201,202202', reporterCode='', cmdCode='9*', flowCode='M', partnerCode='0,826',
                                          partner2Code=None, customsCode=None, motCode=None, aggregateBy=None, breakdownMode='classic')
 print(mydf.head(5))
+# download and combine monthly files in Final Classic type published in 7 days
+comtradeapicall.bulkDownloadAndCombineFinalClassicFile(
+    subscription_key, directory=directory,  typeCode='C', freqCode='M', clCode='HS', period=None, reporterCode=None, decompress=False, publishedDateFrom=lastweek, publishedDateTo=None)
+# download and combine all tariff line data in 2022 into single file
+comtradeapicall.bulkDownloadAndCombineTarifflineFile(
+    subscription_key, directory=directory, typeCode='C', freqCode='A', clCode='HS', period='2022', reporterCode=None, decompress=False)
+# download and combine all annual final data for Guyana (code 328) from all years into single file
+comtradeapicall.bulkDownloadAndCombineFinalFile(
+    subscription_key, directory=directory,  typeCode='C', freqCode='A', clCode='HS', period=None, reporterCode=328, decompress=False)
