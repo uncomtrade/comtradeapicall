@@ -15,6 +15,11 @@ def getPreviewData(subscription_key, tradeDataType, typeCode, freqCode, clCode, 
         if tradeDataType == 'TARIFFLINE':
             baseURL = 'https://comtradeapi.un.org/data/v1/getTariffline/' + \
                 typeCode + '/' + freqCode + '/' + clCode
+        elif tradeDataType == 'TRADEMATRIX':
+            # override any given clCode
+            clCode = "TM"
+            baseURL = 'https://comtradeapi.un.org/data/v1/getTradeMatrix/' + \
+                typeCode + '/' + freqCode + '/' + clCode
         else:
             baseURL = 'https://comtradeapi.un.org/data/v1/get/' + \
                 typeCode + '/' + freqCode + '/' + clCode
@@ -293,3 +298,15 @@ def getBilateralData(subscription_key, typeCode, freqCode, clCode, period, repor
                 return df
         except urllib3.exceptions.RequestError as err:
             print(f'Request error: {err}')
+
+
+def getTradeMatrix(subscription_key, typeCode, freqCode, period, reporterCode, cmdCode, flowCode,
+                   partnerCode,
+                   maxRecords=None, format_output=None,
+                   aggregateBy=None, countOnly=None, includeDesc=None, proxy_url=None):
+    return getPreviewData(subscription_key, 'TRADEMATRIX', typeCode, freqCode, clCode='TM', period=period, reporterCode=reporterCode,
+                          cmdCode=cmdCode, flowCode=flowCode,
+                          partnerCode=partnerCode,
+                          partner2Code=None, customsCode=None, motCode=None, maxRecords=maxRecords, format_output=format_output, aggregateBy=aggregateBy,
+                          breakdownMode='classic',
+                          countOnly=countOnly, includeDesc=includeDesc, proxy_url=proxy_url)

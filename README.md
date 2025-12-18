@@ -3,6 +3,7 @@ This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.
  (and much more). 
 
  # Revision
+ - 1.3.0: Add a function to extract Trade Matrix (the official trade statistics complemented by estimates)
  - 1.2.3: Add functions to download and combine bulk files (bulkDownloadAndCombineFinalFile)
  - 1.2.2: Removed AIS function as it is no longer available; Add functions getTradeBalance and getBilateralData
 
@@ -296,6 +297,10 @@ mydf = comtradeapicall.getTradeBalance(subscription_key, typeCode='C', freqCode=
 ``` python
 mydf = comtradeapicall.getBilateralData(subscription_key, typeCode='C', freqCode='M', clCode='HS', period='202205', reporterCode='36', cmdCode='TOTAL', flowCode='X', partnerCode=None)
 ``` 
+- Get Trade Matrix Data - (estimated) World Export of one digit SITC section in 2024 (note: this may contain estimated trade values)
+``` python
+mydf = comtradeapicall.getTradeMatrix(subscription_key, typeCode='C', freqCode='A', period='2024', reporterCode='0',cmdCode='ag1', flowCode='X', partnerCode='0', aggregateBy=None, includeDesc=True)
+ ``` 
 ## Script Examples
 - Examples folder contains more use cases including calculation of unit value, tracking top traded products
 - Tests folder contains examples of using the lib

@@ -13,6 +13,7 @@ from .PreviewGet import getTarifflineData
 from .PreviewGet import _getTarifflineData
 from .PreviewGet import getTradeBalance
 from .PreviewGet import getBilateralData
+from .PreviewGet import getTradeMatrix
 
 # Async module
 from .Async import submitAsyncFinalDataRequest

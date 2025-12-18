@@ -273,3 +273,8 @@ comtradeapicall.bulkDownloadAndCombineTarifflineFile(
 # download and combine all annual final data for Guyana (code 328) from all years into single file
 comtradeapicall.bulkDownloadAndCombineFinalFile(
     subscription_key, directory=directory,  typeCode='C', freqCode='A', clCode='HS', period=None, reporterCode=328, decompress=False)
+# Get Trade Matrix Data - (estimated) World Export of one digit SITC section in 2024 (note: this may contain estimated trade values)
+mydf = comtradeapicall.getTradeMatrix(subscription_key, typeCode='C', freqCode='A', period='2024',
+                                      reporterCode='0', cmdCode='ag1', flowCode='X', partnerCode='0', aggregateBy=None, includeDesc=True)
+print(mydf.head(5))
+print(len(mydf))
