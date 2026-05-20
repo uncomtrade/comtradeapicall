@@ -278,3 +278,6 @@ mydf = comtradeapicall.getTradeMatrix(subscription_key, typeCode='C', freqCode='
                                       reporterCode='0', cmdCode='ag1', flowCode='X', partnerCode='0', aggregateBy=None, includeDesc=True)
 print(mydf.head(5))
 print(len(mydf))
+# Group Trade Matrix Data - Calculate groupings from trade matrix data. The example below shows the trade matrix grouped by period (2000+2024), reporter (360+188 and LDC), and partner (400+600 and EU). Note that the plus sign creates groupings, while the comma creates individual calls.
+mydf = comtradeapicall.getTradeMatrixGroup(subscription_key, typeCode='C', freqCode='A', period='2000+2024, 2023',
+                                           reporterCode='360+188, 826, LDC', cmdCode='TOTAL,01', flowCode='X', partnerCode='842, 400+600, EU')

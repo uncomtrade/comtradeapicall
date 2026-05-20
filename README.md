@@ -3,6 +3,7 @@ This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.
  (and much more). 
 
  # Revision
+ - 1.3.1: Add a function to calculate the groupings of Trade Matrix
  - 1.3.0: Add a function to extract Trade Matrix (the official trade statistics complemented by estimates)
  - 1.2.3: Add functions to download and combine bulk files (bulkDownloadAndCombineFinalFile)
  - 1.2.2: Removed AIS function as it is no longer available; Add functions getTradeBalance and getBilateralData
@@ -300,6 +301,10 @@ mydf = comtradeapicall.getBilateralData(subscription_key, typeCode='C', freqCode
 - Get Trade Matrix Data - (estimated) World Export of one digit SITC section in 2024 (note: this may contain estimated trade values)
 ``` python
 mydf = comtradeapicall.getTradeMatrix(subscription_key, typeCode='C', freqCode='A', period='2024', reporterCode='0',cmdCode='ag1', flowCode='X', partnerCode='0', aggregateBy=None, includeDesc=True)
+ ``` 
+ - Group Trade Matrix Data - Calculate groupings from trade matrix data. The example below shows the trade matrix grouped by period (2000+2024), reporter (360+188 and LDC), and partner (400+600 and EU). Note that the plus sign creates groupings, while the comma creates individual calls. Definition of standard country groups is taken from https://comtradeapi.un.org/files/v1/app/reference/country_groups.json
+``` python
+mydf = comtradeapicall.getTradeMatrixGroup(subscription_key, typeCode='C', freqCode='A', period='2000+2024, 2023', reporterCode='360+188, 826, LDC',cmdCode='TOTAL,01', flowCode='X', partnerCode='842, 400+600, EU')
  ``` 
 ## Script Examples
 - Examples folder contains more use cases including calculation of unit value, tracking top traded products

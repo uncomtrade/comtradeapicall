@@ -52,3 +52,6 @@ from .Metadata import convertCountryIso3ToCode
 
 # SUV module
 from .SUV import getSUV
+
+# GroupCalc
+from .GroupCalc import getTradeMatrixGroup
