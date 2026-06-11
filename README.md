@@ -3,6 +3,7 @@ This package simplifies calling [APIs of UN Comtrade](https://comtradedeveloper.
  (and much more). 
 
  # Revision
+ - 1.3.2: Fix bug in calculating the groups of Trade Matrix
  - 1.3.1: Add a function to calculate the groupings of Trade Matrix
  - 1.3.0: Add a function to extract Trade Matrix (the official trade statistics complemented by estimates)
  - 1.2.3: Add functions to download and combine bulk files (bulkDownloadAndCombineFinalFile)
