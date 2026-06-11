@@ -366,10 +366,16 @@ def getTradeMatrixGroup(
 
     if "cmdDesc" in agg_df.columns:
         agg_df["cmdDesc"] = agg_df.apply(lambda r: r["cmdLabel"]
-                                         if "+" in r["cmdLabel"] or r["cmdLabel"].isalpha()
-                                         else r["cmdDesc"],
-                                         axis=1
+                                         if ("+" in r["cmdLabel"] or r["cmdLabel"].isalpha() or
+                                             (
+                                             any(c.isalpha() for c in r["cmdLabel"]) and
+                                             any(c.isdigit()
+                                                 for c in r["cmdLabel"])
                                          )
+        )
+            else r["cmdDesc"],
+            axis=1
+        )
 
     if "flowDesc" in agg_df.columns:
         agg_df["flowDesc"] = agg_df.apply(
