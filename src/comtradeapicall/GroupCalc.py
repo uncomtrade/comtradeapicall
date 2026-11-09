@@ -268,7 +268,7 @@ def getTradeMatrixGroup(
                         subscription_key,
                         typeCode,
                         freqCode,
-                        "HS",
+                        "TM",
                         ",".join(pgrp),
                         ",".join(rgrp),
                         ",".join(cgrp),
@@ -282,16 +282,19 @@ def getTradeMatrixGroup(
                         # -------------------------------------------------
                         # Handle isReported → isPrimaryValueEstimated
                         # -------------------------------------------------
+                        required = {'primaryValue', 'flowCode', 'flowDesc', 'reporterDesc'}
+                        missing = required.difference(df.columns)
+                        if missing:
+                            raise ValueError(f"Trade matrix response missing columns: {sorted(missing)}")
                         if "isReported" in df.columns:
-                            df["isReported"] = df["isReported"].astype(
-                                str).str.lower()
-
-                            df["isPrimaryValueEstimated"] = df["isReported"].apply(
-                                lambda x: False if x == "true" else True
-                            )
+                            normalized = df["isReported"].astype(str).str.strip().str.lower()
+                            reported = normalized.map({
+                                'true': True, '1': True, '1.0': True,
+                                'false': False, '0': False, '0.0': False
+                            }).astype('boolean')
+                            df["isPrimaryValueEstimated"] = ~reported
                         else:
-                            # If column not present, default to False or "Not Available"
-                            df["isPrimaryValueEstimated"] = "Not Available"
+                            df["isPrimaryValueEstimated"] = pd.Series(pd.NA, index=df.index, dtype='boolean')
 
                         df["period"] = plabel
                         df["reporterCode"] = rlabel
@@ -321,23 +324,23 @@ def getTradeMatrixGroup(
         )
 
     agg_dict = {
-        "primaryValue": "sum",
-        "reporterDesc": lambda x: "+".join(sorted(set(x))),
+        "primaryValue": lambda x: x.sum(min_count=1),
+        "reporterDesc": lambda x: "+".join(sorted(set(x.dropna().astype(str)))),
         "reporterLabel": "first"
     }
     if "isPrimaryValueEstimated" in full_df.columns:
-        agg_dict["isPrimaryValueEstimated"] = "max"
+        agg_dict["isPrimaryValueEstimated"] = _aggregate_estimated_flag
 
     if "partnerDesc" in full_df.columns:
-        agg_dict["partnerDesc"] = lambda x: "+".join(sorted(set(x)))
+        agg_dict["partnerDesc"] = lambda x: "+".join(sorted(set(x.dropna().astype(str))))
         agg_dict["partnerLabel"] = "first"
 
     if "cmdDesc" in full_df.columns:
-        agg_dict["cmdDesc"] = lambda x: "+".join(sorted(set(x)))
+        agg_dict["cmdDesc"] = lambda x: "+".join(sorted(set(x.dropna().astype(str))))
         agg_dict["cmdLabel"] = "first"
 
     if "flowDesc" in full_df.columns:
-        agg_dict["flowDesc"] = lambda x: "+".join(sorted(set(x)))
+        agg_dict["flowDesc"] = lambda x: "+".join(sorted(set(x.dropna().astype(str))))
         agg_dict["flowLabel"] = "first"
 
     agg_df = (
@@ -422,3 +425,24 @@ def getTradeMatrixGroup(
     agg_df = agg_df[required_columns]
 
     return agg_df
+
+
+# Existing helper name retained for compatibility.
+build_country_to_group_lookup = build_country_group_lookup
+
+def build_group_to_country_lookup(country_group_json):
+    """Return group-to-country mapping, inverse of the existing helper."""
+    result = {}
+    for country, groups in build_country_group_lookup(country_group_json).items():
+        for group in groups:
+            result.setdefault(group, []).append(country)
+    return result
+
+
+def _aggregate_estimated_flag(values):
+    """True if any estimate; otherwise unknown if any flag is unknown."""
+    if values.fillna(False).any():
+        return True
+    if values.isna().any():
+        return pd.NA
+    return False

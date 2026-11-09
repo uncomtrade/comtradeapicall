@@ -22,10 +22,14 @@ def getMetadata(subscription_key, typeCode, freqCode, clCode, period, reporterCo
     try:
         resp = http.request("GET", baseURL, fields=fields, timeout=120)
         if resp.status != 200:
-            print(resp.data.decode('utf-8'))
+            raise RuntimeError(f"HTTP {resp.status}: {resp.data.decode('utf-8', errors='replace')}")
         else:
-            jsonResult = json.loads(resp.data)
+            jsonResult = json.loads(resp.data.decode('utf-8-sig'))
             df = json_normalize(jsonResult['data'])
+            if df.empty:
+                return pd.DataFrame()
+            if 'notes' not in df.columns:
+                raise ValueError('Metadata response is missing notes')
             FIELDS = ['notes']
             dt = df[FIELDS]
             dt = dt.explode('notes')
@@ -33,17 +37,21 @@ def getMetadata(subscription_key, typeCode, freqCode, clCode, period, reporterCo
                 pd.DataFrame(dt["notes"]
                              .apply(pd.Series))
             )
+            if df_final.empty:
+                return pd.DataFrame()
+            if not {'datasetCode', 'publicationDate'}.issubset(df_final.columns):
+                raise ValueError('Metadata notes missing datasetCode or publicationDate')
             dt_final_latest = df_final[['datasetCode', 'publicationDate']].groupby(
-                "datasetCode").max()
+                'datasetCode', as_index=False)['publicationDate'].max()
             dt_final_latest.loc[:, 'isLatestPublication'] = True
             df_final_merge = df_final.merge(
-                dt_final_latest, on='publicationDate', how='left')
+                dt_final_latest, on=['datasetCode', 'publicationDate'], how='left', validate='many_to_one')
             if (showHistory):
                 return df_final_merge
             else:
-                return df_final_merge[df_final_merge.notnull()].query('isLatestPublication==True')
-    except urllib3.exceptions.RequestError as err:
-        print(f'Request error: {err}')
+                return df_final_merge.loc[df_final_merge['isLatestPublication'].eq(True)].copy()
+    except urllib3.exceptions.HTTPError as err:
+        raise RuntimeError('Comtrade transport request failed') from err
 
 
 def _getMetadata(typeCode, freqCode, clCode, period, reporterCode, showHistory):
@@ -59,25 +67,23 @@ def listReference(category=None, proxy_url=None):
             http = urllib3.PoolManager()
         resp = http.request("GET", baseURL, timeout=120)
         if resp.status != 200:
-            print(resp.data.decode('utf-8'))
+            raise RuntimeError(f"HTTP {resp.status}: {resp.data.decode('utf-8', errors='replace')}")
         else:
-            resp.encoding = 'utf-8-sig'
-            jsonResult = json.loads(resp.data)
+            jsonResult = json.loads(resp.data.decode('utf-8-sig'))
             df = json_normalize(jsonResult['results'])
             if category is not None:
-                return df.query("category=='" + category + "'")
+                return df.loc[df['category'].eq(category)].copy()
             else:
                 return df
-    except urllib3.exceptions.RequestError as err:
-        print(f'Request error: {err}')
+    except urllib3.exceptions.HTTPError as err:
+        raise RuntimeError('Comtrade transport request failed') from err
 
 
 def getReference(category, proxy_url=None):
     try:
-        baseURL = listReference(category).iloc[0]['fileuri']
-    except:  # noqa: E722
-        baseURL = ''
-        print('Error in looking up the file URI for', category)
+        baseURL = listReference(category, proxy_url=proxy_url).iloc[0]['fileuri']
+    except (AttributeError, IndexError, KeyError, TypeError) as err:
+        raise ValueError(f'No reference URI for category {category!r}') from err
     if baseURL != '':
         try:
             if proxy_url:
@@ -86,15 +92,14 @@ def getReference(category, proxy_url=None):
                 http = urllib3.PoolManager()
             resp = http.request("GET", baseURL, timeout=120)
             if resp.status != 200:
-                print(resp.data.decode('utf-8'))
+                raise RuntimeError(f"HTTP {resp.status}: {resp.data.decode('utf-8', errors='replace')}")
             else:
-                resp.encoding = 'utf-8-sig'
-                jsonResult = json.loads(resp.data)
+                jsonResult = json.loads(resp.data.decode('utf-8-sig'))
                 # Results contain the required data
                 df = json_normalize(jsonResult['results'])
                 return df
-        except urllib3.exceptions.RequestError as err:
-            print(f'Request error: {err}')
+        except urllib3.exceptions.HTTPError as err:
+            raise RuntimeError('Comtrade transport request failed') from err
 
 
 def convertCountryIso3ToCode(countryIsoCode, proxy_url=None):
@@ -104,11 +109,13 @@ def convertCountryIso3ToCode(countryIsoCode, proxy_url=None):
     else:
         http = urllib3.PoolManager()
     resp = http.request("GET", baseURL, timeout=120)
-    df = json_normalize(json.loads(resp.data)['results'])
+    if resp.status != 200:
+        raise RuntimeError(f'Country reference HTTP {resp.status}')
+    df = json_normalize(json.loads(resp.data.decode('utf-8-sig'))['results'])
     df['country_area_code'] = df['country_area_code'].astype(str)
     delim = ','
     iso_string = countryIsoCode
-    iso_list = iso_string.split(delim)
-    code_list = df[df['iso3'].isin(iso_list)]['country_area_code'].tolist()
+    iso_list = [v.strip().upper() for v in iso_string.split(delim) if v.strip()]
+    code_list = df[df['iso3'].astype(str).str.strip().str.upper().isin(iso_list)]['country_area_code'].tolist()
     code_string = delim.join(code_list)
     return code_string

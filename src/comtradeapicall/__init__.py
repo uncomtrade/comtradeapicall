@@ -14,6 +14,8 @@ from .PreviewGet import _getTarifflineData
 from .PreviewGet import getTradeBalance
 from .PreviewGet import getBilateralData
 from .PreviewGet import getTradeMatrix
+from .PreviewGet import getWorldShare
+from .PreviewGet import getMBS
 
 # Async module
 from .Async import submitAsyncFinalDataRequest
@@ -32,6 +34,9 @@ from .BulkDownload import bulkDownloadFinalClassicFileDateRange
 from .BulkDownload import bulkDownloadAndCombineTarifflineFile
 from .BulkDownload import bulkDownloadAndCombineFinalFile
 from .BulkDownload import bulkDownloadAndCombineFinalClassicFile
+from .BulkDownload import bulkDownloadTradeMatrixFile
+from .BulkDownload import bulkDownloadTradeMatrixFileDateRange
+from .BulkDownload import bulkDownloadAndCombineTradeMatrixFile
 
 # DataAvailability module
 from .DataAvailability import _getFinalDataAvailability
@@ -42,6 +47,7 @@ from .DataAvailability import getFinalDataBulkAvailability
 from .DataAvailability import getFinalClassicDataBulkAvailability
 from .DataAvailability import getTarifflineDataBulkAvailability
 from .DataAvailability import getLiveUpdate
+from .DataAvailability import getComtradeReleases
 
 # Metadata module
 from .Metadata import getMetadata
@@ -55,3 +61,48 @@ from .SUV import getSUV
 
 # GroupCalc
 from .GroupCalc import getTradeMatrixGroup
+
+# Public wildcard exports; legacy underscore helpers remain directly importable.
+__all__ = [
+    "previewFinalData",
+    "previewCountFinalData",
+    "previewTarifflineData",
+    "getFinalData",
+    "getCountFinalData",
+    "getTarifflineData",
+    "getTradeBalance",
+    "getBilateralData",
+    "getTradeMatrix",
+    "getWorldShare",
+    "getMBS",
+    "submitAsyncFinalDataRequest",
+    "submitAsyncTarifflineDataRequest",
+    "checkAsyncDataRequest",
+    "downloadAsyncFinalDataRequest",
+    "downloadAsyncTarifflineDataRequest",
+    "bulkDownloadFinalFile",
+    "bulkDownloadTarifflineFile",
+    "bulkDownloadFinalFileDateRange",
+    "bulkDownloadTarifflineFileDateRange",
+    "bulkDownloadFinalClassicFile",
+    "bulkDownloadFinalClassicFileDateRange",
+    "bulkDownloadAndCombineTarifflineFile",
+    "bulkDownloadAndCombineFinalFile",
+    "bulkDownloadAndCombineFinalClassicFile",
+    "bulkDownloadTradeMatrixFile",
+    "bulkDownloadTradeMatrixFileDateRange",
+    "bulkDownloadAndCombineTradeMatrixFile",
+    "getFinalDataAvailability",
+    "getTarifflineDataAvailability",
+    "getFinalDataBulkAvailability",
+    "getFinalClassicDataBulkAvailability",
+    "getTarifflineDataBulkAvailability",
+    "getLiveUpdate",
+    "getComtradeReleases",
+    "getMetadata",
+    "getReference",
+    "listReference",
+    "convertCountryIso3ToCode",
+    "getSUV",
+    "getTradeMatrixGroup",
+]

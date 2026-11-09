@@ -28,13 +28,13 @@ def submitAsyncDataRequest(subscription_key, endPoint, typeCode, freqCode, clCod
     try:
         resp = http.request("GET", baseURL, fields=fields, timeout=120)
         if resp.status != 202:
-            print(resp.data.decode('utf-8'))
+            raise RuntimeError(f"HTTP {resp.status}: {resp.data.decode('utf-8', errors='replace')}")
         else:
             jsonResult = json.loads(resp.data)
             print('Return message:', jsonResult['message'])
             return jsonResult
-    except urllib3.exceptions.RequestError as err:
-        print(f'Request error: {err}')
+    except urllib3.exceptions.HTTPError as err:
+        raise RuntimeError('Comtrade transport request failed') from err
 
 
 def submitAsyncFinalDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode,
@@ -67,78 +67,75 @@ def checkAsyncDataRequest(subscription_key, batchId=None, proxy_url=None):
     try:
         resp = http.request("GET", baseURL, fields=fields, timeout=120)
         if resp.status != 200:
-            print(resp.data.decode('utf-8'))
+            raise RuntimeError(f"HTTP {resp.status}: {resp.data.decode('utf-8', errors='replace')}")
         else:
             jsonResult = json.loads(resp.data)
             df = json_normalize(jsonResult['data'])
             return df
-    except urllib3.exceptions.RequestError as err:
-        print(f'Request error: {err}')
+    except urllib3.exceptions.HTTPError as err:
+        raise RuntimeError('Comtrade transport request failed') from err
 
 
 def downloadAsyncFinalDataRequest(subscription_key, directory, typeCode, freqCode, clCode, period,
                                   reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode,
-                                  aggregateBy=None, breakdownMode=None, proxy_url=None):
-    myJson = submitAsyncFinalDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode,
-                                         cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, aggregateBy, breakdownMode, proxy_url=proxy_url)
-    batchId = myJson['requestId']
-    print("Processing and downloading the result. BatchId: ", batchId)
-    status = ''
-    while status != 'Completed' and status != 'Error':
-        mydf = checkAsyncDataRequest(subscription_key, batchId=batchId)
-        current_status = mydf.iloc[0]['status']
-        if status != current_status:
-            status = current_status
-            print("Batch Status: ", current_status)
-        t.sleep(15)
-    if status == 'Completed':
-        url = mydf.iloc[0]['uri']
-        a = urlparse(url)
-        fileName = os.path.basename(a.path)
-        download_path = os.path.join(directory, fileName)
-        # download file
-        if proxy_url:
-            httpFILE = urllib3.ProxyManager(proxy_url=proxy_url)
-        else:
-            httpFILE = urllib3.PoolManager()
-        with open(download_path, 'wb') as out:
-            r = httpFILE.request('GET', url, preload_content=False)
-            shutil.copyfileobj(r, out)
-        r.release_conn()
-        print(fileName, ' downloaded successfully')
-    else:
-        print('Error occurred when processing batchId: ', batchId)
+                                  aggregateBy=None, breakdownMode=None, proxy_url=None, poll_interval=15, max_wait_seconds=3600):
+    result = submitAsyncFinalDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, aggregateBy, breakdownMode, proxy_url=proxy_url)
+    _download_async_result(subscription_key, directory, result, proxy_url, poll_interval, max_wait_seconds)
 
 
 def downloadAsyncTarifflineDataRequest(subscription_key, directory, typeCode, freqCode, clCode, period,
-                                       reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, proxy_url=None):
-    myJson = submitAsyncTarifflineDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode,
-                                              cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, proxy_url=proxy_url)
-    batchId = myJson['requestId']
-    # check status -- looping
-    print("Processing and downloading the result. BatchId: ", batchId)
-    status = ''
-    while status != 'Completed' and status != 'Error':
-        mydf = checkAsyncDataRequest(subscription_key, batchId=batchId)
-        current_status = mydf.iloc[0]['status']
-        if status != current_status:
-            status = current_status
-            print("Batch Status: ", current_status)
-        t.sleep(15)
-    if status == 'Completed':
-        url = mydf.iloc[0]['uri']
-        a = urlparse(url)
-        fileName = os.path.basename(a.path)
-        download_path = os.path.join(directory, fileName)
-        # download file
-        if proxy_url:
-            httpFILE = urllib3.ProxyManager(proxy_url=proxy_url)
-        else:
-            httpFILE = urllib3.PoolManager()
-        with open(download_path, 'wb') as out:
-            r = httpFILE.request('GET', url, preload_content=False)
-            shutil.copyfileobj(r, out)
-        r.release_conn()
-        print(fileName, ' downloaded successfully')
-    else:
-        print('Error occurred when processing batchId: ', batchId)
+                                       reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, proxy_url=None, poll_interval=15, max_wait_seconds=3600):
+    result = submitAsyncTarifflineDataRequest(subscription_key, typeCode, freqCode, clCode, period, reporterCode, cmdCode, flowCode, partnerCode, partner2Code, customsCode, motCode, proxy_url=proxy_url)
+    _download_async_result(subscription_key, directory, result, proxy_url, poll_interval, max_wait_seconds)
+
+
+def _download_async_result(subscription_key, directory, result, proxy_url, poll_interval, max_wait_seconds):
+    if not isinstance(result, dict) or not result.get('requestId'):
+        raise RuntimeError('The asynchronous request was not accepted')
+    if poll_interval <= 0 or max_wait_seconds <= 0:
+        raise ValueError('Polling interval and maximum wait must be positive')
+    os.makedirs(directory, exist_ok=True)
+    batch_id = result['requestId']
+    deadline = t.monotonic() + max_wait_seconds
+    while True:
+        if t.monotonic() >= deadline:
+            raise TimeoutError(f'Async request {batch_id} timed out')
+        frame = checkAsyncDataRequest(subscription_key, batchId=batch_id, proxy_url=proxy_url)
+        if frame is None or frame.empty or 'status' not in frame.columns:
+            raise RuntimeError(f'Invalid status response for batch {batch_id}')
+        status = str(frame.iloc[0]['status'])
+        if status == 'Completed':
+            break
+        if status.lower() in {'error', 'failed', 'cancelled', 'canceled', 'expired'}:
+            raise RuntimeError(f'Async request {batch_id} ended with {status}')
+        t.sleep(min(poll_interval, max(0, deadline - t.monotonic())))
+    if 'uri' not in frame.columns or not isinstance(frame.iloc[0]['uri'], str):
+        raise RuntimeError('Completed request did not provide a download URI')
+    url = frame.iloc[0]['uri']
+    filename = os.path.basename(urlparse(url).path)
+    if filename in {'', '.', '..'}:
+        raise ValueError('Invalid download filename')
+    http = urllib3.ProxyManager(proxy_url=proxy_url) if proxy_url else urllib3.PoolManager()
+    _save_download(http, url, os.path.join(directory, filename))
+    print(filename, 'downloaded successfully')
+
+
+def _save_download(http, url, destination, fields=None):
+    """Validate response and atomically publish a completed download."""
+    import tempfile
+    directory = os.path.dirname(os.path.abspath(destination))
+    os.makedirs(directory, exist_ok=True)
+    response = http.request('GET', url, fields=fields, preload_content=False, timeout=120)
+    temporary = None
+    try:
+        if response.status != 200:
+            raise RuntimeError(f'Download HTTP {response.status}')
+        with tempfile.NamedTemporaryFile(dir=directory, delete=False) as output:
+            temporary = output.name
+            shutil.copyfileobj(response, output)
+        os.replace(temporary, destination)
+        temporary = None
+    finally:
+        response.release_conn()
+        if temporary and os.path.exists(temporary):
+            os.remove(temporary)

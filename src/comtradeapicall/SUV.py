@@ -19,10 +19,10 @@ def getSUV(subscription_key, typeCode='C', freqCode='A', clCode='HS', period=Non
     try:
         resp = http.request("GET", baseURL, fields=fields, timeout=120)
         if resp.status != 200:
-            print(resp.data)
+            raise RuntimeError(f"HTTP {resp.status}: {resp.data.decode('utf-8', errors='replace')}")
         else:
             jsonResult = json.loads(resp.data)
             df = json_normalize(jsonResult['data'])
             return df
-    except urllib3.exceptions.RequestError as err:
-        print(f'Request error: {err}')
+    except urllib3.exceptions.HTTPError as err:
+        raise RuntimeError('Comtrade transport request failed') from err

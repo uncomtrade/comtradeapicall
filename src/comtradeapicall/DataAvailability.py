@@ -2,7 +2,26 @@ import json
 from pandas import json_normalize
 import urllib3
 
+def getComtradeReleases(proxy_url=None):
+    """Retrieve public Comtrade release information as a pandas DataFrame.
 
+    No subscription key is required. Response normalization follows getLiveUpdate.
+    """
+    baseURL = 'https://comtradeapi.un.org/public/v1/getComtradeReleases'
+    if proxy_url:
+        http = urllib3.ProxyManager(proxy_url=proxy_url)
+    else:
+        http = urllib3.PoolManager()
+    try:
+        resp = http.request("GET", baseURL, fields={}, timeout=120)
+        if resp.status != 200:
+            print(resp.data.decode('utf-8', errors='replace'))
+        else:
+            jsonResult = json.loads(resp.data)
+            return json_normalize(jsonResult['data'])
+    except urllib3.exceptions.RequestError as err:
+        print(f'Request error: {err}')
+        
 def getLiveUpdate(subscription_key, proxy_url=None):
     baseURL = 'https://comtradeapi.un.org/data/v1/getLiveUpdate'
     PARAMS = dict()
@@ -15,13 +34,13 @@ def getLiveUpdate(subscription_key, proxy_url=None):
     try:
         resp = http.request("GET", baseURL, fields=fields, timeout=120)
         if resp.status != 200:
-            print(resp.data.decode('utf-8'))
+            raise RuntimeError(f"HTTP {resp.status}: {resp.data.decode('utf-8', errors='replace')}")
         else:
             jsonResult = json.loads(resp.data)
             df = json_normalize(jsonResult['data'])
             return df
-    except urllib3.exceptions.RequestError as err:
-        print(f'Request error: {err}')
+    except urllib3.exceptions.HTTPError as err:
+        raise RuntimeError('Comtrade transport request failed') from err
 
 
 def getDataAvailability(subscription_key, tradeDataType, dataAvailabilityType, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo, proxy_url=None):
@@ -60,38 +79,38 @@ def getDataAvailability(subscription_key, tradeDataType, dataAvailabilityType, t
     try:
         resp = http.request("GET", baseURL, fields=fields, timeout=120)
         if resp.status != 200:
-            print(resp.data.decode('utf-8'))
+            raise RuntimeError(f"HTTP {resp.status}: {resp.data.decode('utf-8', errors='replace')}")
         else:
             jsonResult = json.loads(resp.data)
             df = json_normalize(jsonResult['data'])
             return df
-    except urllib3.exceptions.RequestError as err:
-        print(f'Request error: {err}')
+    except urllib3.exceptions.HTTPError as err:
+        raise RuntimeError('Comtrade transport request failed') from err
 
 
-def _getFinalDataAvailability(typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
-    return getDataAvailability(None, 'FINAL', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
+def _getFinalDataAvailability(typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    return getDataAvailability(None, 'FINAL', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo, proxy_url=proxy_url)
 
 
-def getFinalDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
-    return getDataAvailability(subscription_key, 'FINAL', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
+def getFinalDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    return getDataAvailability(subscription_key, 'FINAL', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo, proxy_url=proxy_url)
 
 
-def _getTarifflineDataAvailability(typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
-    return getDataAvailability(None, 'TARIFFLINE', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
+def _getTarifflineDataAvailability(typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    return getDataAvailability(None, 'TARIFFLINE', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo, proxy_url=proxy_url)
 
 
-def getTarifflineDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
-    return getDataAvailability(subscription_key, 'TARIFFLINE', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
+def getTarifflineDataAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    return getDataAvailability(subscription_key, 'TARIFFLINE', None, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo, proxy_url=proxy_url)
 
 
-def getFinalDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
-    return getDataAvailability(subscription_key, 'FINAL', 'BULK', typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
+def getFinalDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    return getDataAvailability(subscription_key, 'FINAL', 'BULK', typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo, proxy_url=proxy_url)
 
 
-def getFinalClassicDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
-    return getDataAvailability(subscription_key, 'FINALCLASSIC', 'BULK', typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
+def getFinalClassicDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    return getDataAvailability(subscription_key, 'FINALCLASSIC', 'BULK', typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo, proxy_url=proxy_url)
 
 
-def getTarifflineDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None):
-    return getDataAvailability(subscription_key, 'TARIFFLINE', 'BULK', typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo)
+def getTarifflineDataBulkAvailability(subscription_key, typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom=None, publishedDateTo=None, proxy_url=None):
+    return getDataAvailability(subscription_key, 'TARIFFLINE', 'BULK', typeCode, freqCode, clCode, period, reporterCode, publishedDateFrom, publishedDateTo, proxy_url=proxy_url)
